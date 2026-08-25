@@ -105,7 +105,10 @@ def test_command_generation_uses_selected_frames_and_cpu_by_default(tmp_path: Pa
     assert feature[:2] == ["colmap", "feature_extractor"]
     assert str(config.frames_dir) in feature
     assert feature[feature.index("--SiftExtraction.use_gpu") + 1] == "0"
+    assert feature[feature.index("--SiftExtraction.num_threads") + 1] == "1"
+    assert feature[feature.index("--SiftExtraction.max_image_size") + 1] == "1600"
     assert matcher[:2] == ["colmap", "sequential_matcher"]
+    assert matcher[matcher.index("--SiftMatching.num_threads") + 1] == "1"
     assert mapper[:2] == ["colmap", "mapper"]
     assert str(config.sparse_models_dir) in mapper
 

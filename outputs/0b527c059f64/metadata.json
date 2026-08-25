@@ -1,0 +1,18 @@
+{
+  "run_id": "0b527c059f64",
+  "source_video": {
+    "filename": "real-drone.mp4",
+    "width": 1920,
+    "height": 1080,
+    "fps": 24.0,
+    "frame_count": 326,
+    "duration_seconds": 13.583333333333334
+  },
+  "sampling_fps": 1.0,
+  "blur_threshold": 25.0,
+  "sampled_frame_count": 14,
+  "selected_frame_count": 14,
+  "rejected_frame_count": 0,
+  "processing_time_seconds": 3.9949,
+  "frames_dir": "/app/outputs/0b527c059f64/frames"
+}

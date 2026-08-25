@@ -168,6 +168,10 @@ class COLMAPBackend(ReconstructionBackend):
             _bool_argument(config.single_camera),
             "--SiftExtraction.use_gpu",
             _bool_argument(config.use_gpu),
+            "--SiftExtraction.num_threads",
+            str(config.sift_num_threads),
+            "--SiftExtraction.max_image_size",
+            str(config.sift_max_image_size),
         ]
         return command
 
@@ -179,6 +183,8 @@ class COLMAPBackend(ReconstructionBackend):
             str(config.database_path),
             "--SiftMatching.use_gpu",
             _bool_argument(config.use_gpu),
+            "--SiftMatching.num_threads",
+            str(config.sift_num_threads),
         ]
         return command
 

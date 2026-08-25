@@ -1,0 +1,103 @@
+{
+  "run_id": "0b527c059f64",
+  "frames": [
+    {
+      "frame_index": 0,
+      "timestamp_seconds": 0.0,
+      "sharpness_score": 459.161,
+      "selected": true,
+      "filename": "frame_000000.jpg"
+    },
+    {
+      "frame_index": 24,
+      "timestamp_seconds": 1.0,
+      "sharpness_score": 310.326,
+      "selected": true,
+      "filename": "frame_000024.jpg"
+    },
+    {
+      "frame_index": 48,
+      "timestamp_seconds": 2.0,
+      "sharpness_score": 299.191,
+      "selected": true,
+      "filename": "frame_000048.jpg"
+    },
+    {
+      "frame_index": 72,
+      "timestamp_seconds": 3.0,
+      "sharpness_score": 323.657,
+      "selected": true,
+      "filename": "frame_000072.jpg"
+    },
+    {
+      "frame_index": 96,
+      "timestamp_seconds": 4.0,
+      "sharpness_score": 333.766,
+      "selected": true,
+      "filename": "frame_000096.jpg"
+    },
+    {
+      "frame_index": 120,
+      "timestamp_seconds": 5.0,
+      "sharpness_score": 336.917,
+      "selected": true,
+      "filename": "frame_000120.jpg"
+    },
+    {
+      "frame_index": 144,
+      "timestamp_seconds": 6.0,
+      "sharpness_score": 305.571,
+      "selected": true,
+      "filename": "frame_000144.jpg"
+    },
+    {
+      "frame_index": 168,
+      "timestamp_seconds": 7.0,
+      "sharpness_score": 260.06,
+      "selected": true,
+      "filename": "frame_000168.jpg"
+    },
+    {
+      "frame_index": 192,
+      "timestamp_seconds": 8.0,
+      "sharpness_score": 293.975,
+      "selected": true,
+      "filename": "frame_000192.jpg"
+    },
+    {
+      "frame_index": 216,
+      "timestamp_seconds": 9.0,
+      "sharpness_score": 295.866,
+      "selected": true,
+      "filename": "frame_000216.jpg"
+    },
+    {
+      "frame_index": 240,
+      "timestamp_seconds": 10.0,
+      "sharpness_score": 481.197,
+      "selected": true,
+      "filename": "frame_000240.jpg"
+    },
+    {
+      "frame_index": 264,
+      "timestamp_seconds": 11.0,
+      "sharpness_score": 555.672,
+      "selected": true,
+      "filename": "frame_000264.jpg"
+    },
+    {
+      "frame_index": 288,
+      "timestamp_seconds": 12.0,
+      "sharpness_score": 592.402,
+      "selected": true,
+      "filename": "frame_000288.jpg"
+    },
+    {
+      "frame_index": 312,
+      "timestamp_seconds": 13.0,
+      "sharpness_score": 466.351,
+      "selected": true,
+      "filename": "frame_000312.jpg"
+    }
+  ]
+}

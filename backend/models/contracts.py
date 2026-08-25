@@ -70,7 +70,9 @@ class UploadResponse(BaseModel):
 class ProcessRequest(BaseModel):
     target_fps: float = 5.0
     blur_threshold: float = 100.0
-    dense: bool = True
+    # Sparse SfM is browser-viewable and safe for the CPU-first Docker image.
+    # Dense MVS remains available as an explicit request option.
+    dense: bool = False
     overwrite: bool = False
     gps_metadata_filename: str | None = None
     resume: bool = False

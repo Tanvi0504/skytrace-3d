@@ -16,6 +16,9 @@ reconstruction:
   dense: true
   matcher: sequential
   use_gpu: false
+  # CPU SIFT otherwise creates one high-memory worker per logical CPU.
+  sift_num_threads: 1
+  sift_max_image_size: 1600
   max_image_size: 2000
   single_camera: true
   minimum_selected_frames: 8

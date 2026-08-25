@@ -7,6 +7,7 @@ frame_selection:
 
 reconstruction:
   dense: false
+  sift_max_image_size: 1280
   max_image_size: 1600
 
 resource_limits:

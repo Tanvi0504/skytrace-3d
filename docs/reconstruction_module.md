@@ -70,6 +70,8 @@ Important options:
 | `--backend` | `colmap` | Reconstruction backend. The interface allows future backends without coupling callers to COLMAP. |
 | `--no-dense` | off | Skip the optional dense MVS pass and generate sparse output only. |
 | `--matcher` | `sequential` | Match chronological video frames sequentially; use `exhaustive` for smaller, non-sequential image sets. |
+| `--sift-max-image-size` | `1600` | Cap the input size used for SIFT feature extraction. |
+| `--sift-num-threads` | `1` | Bound CPU SIFT extraction/matching workers to prevent memory exhaustion. |
 | `--colmap-executable` | `colmap` | Executable name on `PATH` or an absolute executable path. |
 | `--use-gpu` | off | Enable GPU SIFT extraction/matching if supported by COLMAP. |
 | `--max-image-size` | `2000` | Dense-undistortion image size cap. |

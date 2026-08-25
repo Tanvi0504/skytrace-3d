@@ -1,0 +1,64 @@
+{
+  "run_id": "0b527c059f64",
+  "state": "FAILED",
+  "created_at": "2026-08-25T17:17:59.509074+00:00",
+  "updated_at": "2026-08-25T17:19:00.963877+00:00",
+  "video_filename": "real-drone.mp4",
+  "video_size_bytes": 8827028,
+  "error": "COLMAP feature_extractor failed with exit code -9. See log: /app/outputs/0b527c059f64/reconstruction/logs/feature_extractor.log",
+  "steps": [
+    {
+      "step": 1,
+      "name": "Frame extraction",
+      "status": "COMPLETED",
+      "summary": {
+        "sampled_frames": 14,
+        "selected_frames": 14,
+        "rejected_frames": 0,
+        "processing_time_seconds": 3.9949
+      },
+      "warnings": [],
+      "error": null
+    },
+    {
+      "step": 2,
+      "name": "3D reconstruction",
+      "status": "FAILED",
+      "summary": {},
+      "warnings": [],
+      "error": "COLMAP feature_extractor failed with exit code -9. See log: /app/outputs/0b527c059f64/reconstruction/logs/feature_extractor.log"
+    },
+    {
+      "step": 3,
+      "name": "Georeferencing",
+      "status": "WAITING",
+      "summary": {},
+      "warnings": [],
+      "error": null
+    },
+    {
+      "step": 4,
+      "name": "Object detection",
+      "status": "WAITING",
+      "summary": {},
+      "warnings": [],
+      "error": null
+    },
+    {
+      "step": 5,
+      "name": "3D object association",
+      "status": "WAITING",
+      "summary": {},
+      "warnings": [],
+      "error": null
+    },
+    {
+      "step": 6,
+      "name": "Measurement / reliability analysis",
+      "status": "WAITING",
+      "summary": {},
+      "warnings": [],
+      "error": null
+    }
+  ]
+}

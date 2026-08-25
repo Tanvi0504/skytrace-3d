@@ -1,0 +1,23 @@
+{
+  "success": false,
+  "backend": "colmap",
+  "input_image_count": 14,
+  "registered_image_count": null,
+  "sparse_point_count": null,
+  "dense_status": "not_requested",
+  "processing_time_seconds": 55.4938,
+  "output_locations": {
+    "output_dir": "/app/outputs/0b527c059f64/reconstruction",
+    "database": null,
+    "sparse_model": null,
+    "sparse_text": null,
+    "sparse_point_cloud": null,
+    "camera_poses": null,
+    "dense_dir": null,
+    "dense_point_cloud": null,
+    "logs": null
+  },
+  "error": "COLMAP feature_extractor failed with exit code -9. See log: /app/outputs/0b527c059f64/reconstruction/logs/feature_extractor.log",
+  "dense_error": null,
+  "warnings": []
+}

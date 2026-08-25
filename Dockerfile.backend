@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.11-slim@sha256:be1575ed968de893bd54f4c56315ff7c4736ce522c1bca08fd521731aafc0d76
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -8,7 +8,7 @@ WORKDIR /app
 
 # CPU-first image. GPU deployment requires a CUDA-compatible host/runtime.
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ffmpeg colmap \
+    && apt-get install -y --no-install-recommends ffmpeg=7:7.1.5-0+deb13u1 colmap=3.10-2 \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt pyproject.toml README.md ./

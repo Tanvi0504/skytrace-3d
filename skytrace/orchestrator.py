@@ -261,6 +261,8 @@ class PipelineOrchestrator:
             colmap_executable=str(cfg["colmap_executable"]),
             matcher=str(cfg["matcher"]),
             use_gpu=bool(cfg["use_gpu"]),
+            sift_num_threads=int(cfg["sift_num_threads"]),
+            sift_max_image_size=int(cfg["sift_max_image_size"]),
             max_image_size=int(cfg["max_image_size"]),
             single_camera=bool(cfg["single_camera"]),
             overwrite=bool(cfg["overwrite_stage_outputs"]),

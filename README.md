@@ -77,6 +77,8 @@ docker compose up --build
 
 Open `http://localhost:8080/viewer/processed-demo`; backend health is at `http://localhost:8000/health`. Put approved weights at `models/yolo11n.pt` before a live object-detection run. Docker's default image has FFmpeg/COLMAP but uses CPU; an NVIDIA/CUDA deployment needs a compatible host runtime and a separately tested GPU image/configuration.
 
+The web API defaults to sparse reconstruction, a real browser-viewable SfM output that is safe for the CPU-first image. Dense MVS remains opt-in. SIFT is capped to one worker and 1600 pixels by default so a small Docker host is not killed by an unbounded COLMAP worker pool.
+
 ## Configuration, evaluation, and tests
 
 `config/default.yaml` centralises every Step 10-operated input, frame, reconstruction, georeference, object, evidence, visualization, and resource setting. `config/demo.yaml` is a faster live-demo profile and `config/evaluation.yaml` retains conservative CPU/sparse settings.

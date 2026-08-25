@@ -21,6 +21,8 @@ class ReconstructionConfig:
     colmap_executable: str = "colmap"
     matcher: str = "sequential"
     use_gpu: bool = False
+    sift_num_threads: int = 1
+    sift_max_image_size: int = 1600
     max_image_size: int = 2000
     single_camera: bool = True
     overwrite: bool = False
@@ -36,6 +38,15 @@ class ReconstructionConfig:
         if self.max_image_size <= 0:
             raise ValueError(
                 f"max_image_size must be > 0, got {self.max_image_size}"
+            )
+        if self.sift_num_threads <= 0:
+            raise ValueError(
+                f"sift_num_threads must be > 0, got {self.sift_num_threads}"
+            )
+        if self.sift_max_image_size <= 0:
+            raise ValueError(
+                "sift_max_image_size must be > 0, "
+                f"got {self.sift_max_image_size}"
             )
 
     @property
@@ -136,4 +147,3 @@ class ReconstructionResult:
             "dense_error": self.dense_error,
             "warnings": self.warnings,
         }
-

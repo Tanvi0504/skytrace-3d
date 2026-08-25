@@ -64,6 +64,18 @@ def build_arg_parser() -> argparse.ArgumentParser:
         help="Maximum image size for dense undistortion (default: 2000).",
     )
     parser.add_argument(
+        "--sift-max-image-size",
+        type=int,
+        default=1600,
+        help="Maximum image size for SIFT feature extraction (default: 1600).",
+    )
+    parser.add_argument(
+        "--sift-num-threads",
+        type=int,
+        default=1,
+        help="Bounded SIFT extraction/matching worker count (default: 1; CPU-safe).",
+    )
+    parser.add_argument(
         "--per-image-camera",
         action="store_true",
         help="Do not assume all selected frames share one camera model.",
@@ -92,6 +104,8 @@ def main(argv: list[str] | None = None) -> int:
         colmap_executable=args.colmap_executable,
         matcher=args.matcher,
         use_gpu=args.use_gpu,
+        sift_num_threads=args.sift_num_threads,
+        sift_max_image_size=args.sift_max_image_size,
         max_image_size=args.max_image_size,
         single_camera=not args.per_image_camera,
         overwrite=args.overwrite,
@@ -119,4 +133,3 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
