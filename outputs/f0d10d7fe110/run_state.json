@@ -1,0 +1,64 @@
+{
+  "run_id": "f0d10d7fe110",
+  "state": "FAILED",
+  "created_at": "2026-08-25T18:02:24.318387+00:00",
+  "updated_at": "2026-08-25T18:02:25.272843+00:00",
+  "video_filename": "example.mp4",
+  "video_size_bytes": 1713815,
+  "error": "COLMAP was not found on PATH. Install COLMAP and ensure the 'colmap' executable is accessible, or pass --colmap-executable.",
+  "steps": [
+    {
+      "step": 1,
+      "name": "Frame extraction",
+      "status": "COMPLETED",
+      "summary": {
+        "sampled_frames": 15,
+        "selected_frames": 15,
+        "rejected_frames": 0,
+        "processing_time_seconds": 0.0783
+      },
+      "warnings": [],
+      "error": null
+    },
+    {
+      "step": 2,
+      "name": "3D reconstruction",
+      "status": "FAILED",
+      "summary": {},
+      "warnings": [],
+      "error": "COLMAP was not found on PATH. Install COLMAP and ensure the 'colmap' executable is accessible, or pass --colmap-executable."
+    },
+    {
+      "step": 3,
+      "name": "Georeferencing",
+      "status": "WAITING",
+      "summary": {},
+      "warnings": [],
+      "error": null
+    },
+    {
+      "step": 4,
+      "name": "Object detection",
+      "status": "WAITING",
+      "summary": {},
+      "warnings": [],
+      "error": null
+    },
+    {
+      "step": 5,
+      "name": "3D object association",
+      "status": "WAITING",
+      "summary": {},
+      "warnings": [],
+      "error": null
+    },
+    {
+      "step": 6,
+      "name": "Measurement / reliability analysis",
+      "status": "WAITING",
+      "summary": {},
+      "warnings": [],
+      "error": null
+    }
+  ]
+}

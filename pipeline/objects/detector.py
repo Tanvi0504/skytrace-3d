@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Optional
@@ -53,6 +54,10 @@ class UltralyticsYOLODetector(ObjectDetector):
         self._class_names: dict[int, str] = {}
 
     def initialize(self) -> DetectorInfo:
+        if "YOLO_CONFIG_DIR" not in os.environ:
+            config_dir = Path.cwd() / "Ultralytics"
+            config_dir.mkdir(parents=True, exist_ok=True)
+            os.environ["YOLO_CONFIG_DIR"] = str(config_dir)
         try:
             from ultralytics import YOLO
         except ImportError as exc:

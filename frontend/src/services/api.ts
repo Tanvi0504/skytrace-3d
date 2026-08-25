@@ -2,8 +2,13 @@ import type { EvidenceInfo, MeasurementResult, Object3D, RunStatus, SceneMetadat
 
 const API_BASE = import.meta.env.VITE_SKYTRACE_API_BASE ?? "";
 
+export function apiUrl(path: string): string {
+  if (/^https?:\/\//i.test(path)) return path;
+  return `${API_BASE}${path}`;
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`${API_BASE}${path}`, init);
+  const response = await fetch(apiUrl(path), init);
   if (!response.ok) {
     let detail = response.statusText;
     try {
@@ -47,4 +52,3 @@ export const api = {
       })
     })
 };
-

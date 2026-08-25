@@ -55,7 +55,7 @@ def _status(name: str, status: str, detail: str, required: bool) -> dict[str, An
 def _node_version_is_supported(value: str | None) -> bool:
     if not value:
         return False
-    match = re.search(r"v?(\\d+)", value)
+    match = re.search(r"v?(\d+)", value)
     return bool(match and 20 <= int(match.group(1)) <= 22)
 
 

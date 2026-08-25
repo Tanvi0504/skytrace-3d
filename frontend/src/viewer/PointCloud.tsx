@@ -6,6 +6,7 @@ import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 import { BufferGeometry, Float32BufferAttribute } from "three";
 import { useEffect, useMemo } from "react";
 import type { SceneAsset } from "../types/api";
+import { apiUrl } from "../services/api";
 
 type Props = {
   asset?: SceneAsset;
@@ -25,7 +26,7 @@ export function SceneGeometry({ asset, evidenceMode }: Props) {
 }
 
 function PlyCloud({ asset, evidenceMode }: Required<Props>) {
-  const source = useLoader(PLYLoader, asset.url);
+  const source = useLoader(PLYLoader, apiUrl(asset.url));
   const geometry = useMemo(() => decimateForDisplay(source, MAX_DISPLAY_POINTS), [source]);
   useEffect(() => () => {
     if (geometry !== source) geometry.dispose();
@@ -65,12 +66,12 @@ function decimateForDisplay(source: BufferGeometry, maximum: number): BufferGeom
 }
 
 function GltfMesh({ asset }: { asset: SceneAsset }) {
-  const gltf = useLoader(GLTFLoader, asset.url);
+  const gltf = useLoader(GLTFLoader, apiUrl(asset.url));
   return <primitive object={gltf.scene} />;
 }
 
 function ObjMesh({ asset }: { asset: SceneAsset }) {
-  const obj = useLoader(OBJLoader, asset.url);
+  const obj = useLoader(OBJLoader, apiUrl(asset.url));
   return <primitive object={obj} />;
 }
 

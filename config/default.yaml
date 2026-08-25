@@ -13,7 +13,7 @@ frame_selection:
 reconstruction:
   backend: colmap
   colmap_executable: colmap
-  dense: true
+  dense: false
   matcher: sequential
   use_gpu: false
   # CPU SIFT otherwise creates one high-memory worker per logical CPU.

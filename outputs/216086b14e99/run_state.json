@@ -1,0 +1,59 @@
+{
+  "run_id": "216086b14e99",
+  "state": "QUEUED",
+  "created_at": "2026-08-25T18:17:16.968452+00:00",
+  "updated_at": "2026-08-25T18:17:16.968779+00:00",
+  "video_filename": null,
+  "video_size_bytes": null,
+  "error": null,
+  "steps": [
+    {
+      "step": 1,
+      "name": "Frame extraction",
+      "status": "WAITING",
+      "summary": {},
+      "warnings": [],
+      "error": null
+    },
+    {
+      "step": 2,
+      "name": "3D reconstruction",
+      "status": "WAITING",
+      "summary": {},
+      "warnings": [],
+      "error": null
+    },
+    {
+      "step": 3,
+      "name": "Georeferencing",
+      "status": "WAITING",
+      "summary": {},
+      "warnings": [],
+      "error": null
+    },
+    {
+      "step": 4,
+      "name": "Object detection",
+      "status": "WAITING",
+      "summary": {},
+      "warnings": [],
+      "error": null
+    },
+    {
+      "step": 5,
+      "name": "3D object association",
+      "status": "WAITING",
+      "summary": {},
+      "warnings": [],
+      "error": null
+    },
+    {
+      "step": 6,
+      "name": "Measurement / reliability analysis",
+      "status": "WAITING",
+      "summary": {},
+      "warnings": [],
+      "error": null
+    }
+  ]
+}

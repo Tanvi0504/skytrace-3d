@@ -1,0 +1,20 @@
+{
+  "settings_version": "0.0.7",
+  "datasets_dir": "C:\\Users\\divya\\OneDrive\\Desktop\\datasets",
+  "weights_dir": "C:\\Users\\divya\\OneDrive\\Desktop\\skytrace-3d\\weights",
+  "runs_dir": "C:\\Users\\divya\\OneDrive\\Desktop\\skytrace-3d\\runs",
+  "uuid": "a42a8643285c03dbc717597f40e1ba78b1fd6426aa0c6a71db522ca9844fc8b9",
+  "sync": true,
+  "api_key": "",
+  "openai_api_key": "",
+  "clearml": true,
+  "comet": true,
+  "dvc": true,
+  "mlflow": true,
+  "neptune": true,
+  "raytune": true,
+  "tensorboard": false,
+  "wandb": false,
+  "vscode_msg": true,
+  "openvino_msg": true
+}

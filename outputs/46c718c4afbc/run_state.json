@@ -1,0 +1,59 @@
+{
+  "run_id": "46c718c4afbc",
+  "state": "FAILED",
+  "created_at": "2026-08-25T18:22:13.122341+00:00",
+  "updated_at": "2026-08-25T18:22:13.369896+00:00",
+  "video_filename": "example.mp4",
+  "video_size_bytes": 1713815,
+  "error": "Only 3 sharp frames were selected; at least 8 are required for reconstruction. Use a less blurred video, reduce blur_threshold after review, or capture more overlap.",
+  "steps": [
+    {
+      "step": 1,
+      "name": "Frame extraction",
+      "status": "FAILED",
+      "summary": {},
+      "warnings": [],
+      "error": "Only 3 sharp frames were selected; at least 8 are required for reconstruction. Use a less blurred video, reduce blur_threshold after review, or capture more overlap."
+    },
+    {
+      "step": 2,
+      "name": "3D reconstruction",
+      "status": "WAITING",
+      "summary": {},
+      "warnings": [],
+      "error": null
+    },
+    {
+      "step": 3,
+      "name": "Georeferencing",
+      "status": "WAITING",
+      "summary": {},
+      "warnings": [],
+      "error": null
+    },
+    {
+      "step": 4,
+      "name": "Object detection",
+      "status": "WAITING",
+      "summary": {},
+      "warnings": [],
+      "error": null
+    },
+    {
+      "step": 5,
+      "name": "3D object association",
+      "status": "WAITING",
+      "summary": {},
+      "warnings": [],
+      "error": null
+    },
+    {
+      "step": 6,
+      "name": "Measurement / reliability analysis",
+      "status": "WAITING",
+      "summary": {},
+      "warnings": [],
+      "error": null
+    }
+  ]
+}

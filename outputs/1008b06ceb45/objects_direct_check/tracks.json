@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "tracking_enabled": true,
+  "tracker": "ByteTrack",
+  "description": "Track IDs come from the configured existing tracker. They identify candidate temporal associations, not a camera-motion-compensated world-motion decision.",
+  "tracks": []
+}

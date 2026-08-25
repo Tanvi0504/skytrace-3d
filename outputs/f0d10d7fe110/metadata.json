@@ -1,0 +1,18 @@
+{
+  "run_id": "f0d10d7fe110",
+  "source_video": {
+    "filename": "example.mp4",
+    "width": 320,
+    "height": 240,
+    "fps": 30.0,
+    "frame_count": 90,
+    "duration_seconds": 3.0
+  },
+  "sampling_fps": 5.0,
+  "blur_threshold": 100.0,
+  "sampled_frame_count": 15,
+  "selected_frame_count": 15,
+  "rejected_frame_count": 0,
+  "processing_time_seconds": 0.0783,
+  "frames_dir": "C:\\Users\\divya\\OneDrive\\Desktop\\skytrace-3d\\outputs\\f0d10d7fe110\\frames"
+}
