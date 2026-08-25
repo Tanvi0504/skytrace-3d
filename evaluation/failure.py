@@ -98,7 +98,7 @@ def classify_failure(run_status: dict[str, Any] | None, metrics: dict[str, Any] 
 
     if metrics.get("evidence_level") in {"LOW", "INSUFFICIENT"}:
         return _payload("MEASUREMENT_LOW_EVIDENCE", "Measurement evidence is low or insufficient.")
-    if metrics.get("dynamic_marker_count", 0):
+    if metrics.get("dynamic_object_contamination"):
         return _payload("DYNAMIC_OBJECT_CONTAMINATION", "Dynamic markers were present near evaluated geometry.")
     return None
 

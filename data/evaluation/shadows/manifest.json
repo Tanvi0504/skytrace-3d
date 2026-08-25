@@ -1,0 +1,22 @@
+{
+  "scenario": "shadows",
+  "single_pass": true,
+  "source_video": "../baseline/../../test/example.mp4",
+  "degradations": [
+    {
+      "type": "shadow",
+      "level": 1
+    },
+    {
+      "type": "shadow",
+      "level": 2
+    },
+    {
+      "type": "shadow",
+      "level": 3
+    }
+  ],
+  "notes": [
+    "Synthetic shadows mark a controlled occluding illumination stress, not a physical lighting model."
+  ]
+}

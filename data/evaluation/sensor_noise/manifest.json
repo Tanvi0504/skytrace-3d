@@ -1,0 +1,8 @@
+{
+  "scenario": "sensor_noise",
+  "single_pass": true,
+  "imu_required": false,
+  "notes": [
+    "If IMU metadata is unavailable, the report must say NOT_TESTED instead of fabricating sensor data."
+  ]
+}

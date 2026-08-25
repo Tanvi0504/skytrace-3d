@@ -1,0 +1,13 @@
+{
+  "scenario": "limited_view",
+  "single_pass": true,
+  "view_rule": "one_continuous_flight_path_only",
+  "surface_classes": [
+    "directly_observed",
+    "weakly_observed",
+    "unseen"
+  ],
+  "notes": [
+    "Unseen geometry must not receive the same confidence as directly observed surfaces."
+  ]
+}

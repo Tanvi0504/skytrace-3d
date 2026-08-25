@@ -1,0 +1,16 @@
+{
+  "scenario": "processing_time",
+  "single_pass": true,
+  "stages": [
+    "frame_extraction",
+    "reconstruction",
+    "georeferencing",
+    "object_detection",
+    "object_3d_association",
+    "analysis",
+    "total"
+  ],
+  "notes": [
+    "Real-time is supported only when measured processing time is not longer than video duration."
+  ]
+}

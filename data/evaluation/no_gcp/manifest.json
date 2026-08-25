@@ -1,0 +1,12 @@
+{
+  "scenario": "no_gcp",
+  "single_pass": true,
+  "cases": [
+    "no_gcp",
+    "minimal_control_if_available",
+    "higher_quality_reference_if_available"
+  ],
+  "notes": [
+    "Zero-GCP reconstruction is quantified, not described as survey-grade."
+  ]
+}

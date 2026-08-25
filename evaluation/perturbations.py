@@ -38,6 +38,22 @@ def add_sensor_noise(frame: np.ndarray, *, sigma: float, seed: int = 0) -> np.nd
     return np.clip(noisy, 0, 255).astype(np.uint8)
 
 
+def add_synthetic_shadow(frame: np.ndarray, *, level: int) -> np.ndarray:
+    """Darken a diagonal band to create a controlled shadow stress case."""
+    if level < 0 or level > 3:
+        raise ValueError("shadow level must be 0, 1, 2, or 3")
+    if level == 0:
+        return frame.copy()
+    height, width = frame.shape[:2]
+    y_indices, x_indices = np.indices((height, width))
+    band_center = height * 0.35 + (x_indices / max(width, 1)) * height * 0.35
+    band_width = height * (0.12 + level * 0.04)
+    mask = np.abs(y_indices - band_center) < band_width
+    output = frame.astype(np.float32)
+    output[mask] *= max(0.25, 1.0 - level * 0.2)
+    return np.clip(output, 0, 255).astype(np.uint8)
+
+
 def create_degraded_video(
     source_video: str | Path,
     output_video: str | Path,
@@ -83,6 +99,8 @@ def create_degraded_video(
                 frame = adjust_illumination(frame, contrast=1.0 + level * 0.35)
             elif degradation == "sensor_noise":
                 frame = add_sensor_noise(frame, sigma=level * 8.0, seed=frames)
+            elif degradation == "shadow":
+                frame = add_synthetic_shadow(frame, level=level)
             elif degradation == "compression":
                 ok, encoded = cv2.imencode(".jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, jpeg_quality])
                 if ok:

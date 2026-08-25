@@ -1,0 +1,31 @@
+{
+  "scenario": "combined_stress",
+  "single_pass": true,
+  "scenarios": [
+    [
+      "motion_blur",
+      "compression"
+    ],
+    [
+      "motion_blur",
+      "gps_noise"
+    ],
+    [
+      "occlusion",
+      "dynamic_objects"
+    ],
+    [
+      "illumination",
+      "compression"
+    ],
+    [
+      "motion_blur",
+      "gps_noise",
+      "dynamic_objects",
+      "occlusion"
+    ]
+  ],
+  "notes": [
+    "Combined stress exists to expose break points, not to manufacture success."
+  ]
+}

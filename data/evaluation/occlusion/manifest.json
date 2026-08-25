@@ -1,0 +1,13 @@
+{
+  "scenario": "occlusion",
+  "single_pass": true,
+  "occluders": [
+    "trees",
+    "vehicles",
+    "structures",
+    "partially hidden objects"
+  ],
+  "notes": [
+    "Observed surfaces must remain separate from inferred or uncertain regions."
+  ]
+}

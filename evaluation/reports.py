@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from evaluation.failure import FAILURE_TAXONOMY
 from evaluation.metrics import compare_against_baseline
 
 
@@ -29,9 +30,13 @@ PS_CHALLENGES: dict[str, dict[str, str]] = {
 def build_report(
     *,
     dataset_dir: Path,
+    dataset_structure: dict[str, Any] | None = None,
     scenarios: list[dict[str, Any]],
     baseline: dict[str, Any] | None,
     metric_accuracy: dict[str, Any],
+    object_detection: dict[str, Any] | None = None,
+    object_localization: dict[str, Any] | None = None,
+    completeness: dict[str, Any] | None = None,
     evidence_validation: dict[str, Any],
 ) -> dict[str, Any]:
     """Create the machine-readable robustness report payload."""
@@ -69,6 +74,7 @@ def build_report(
         "schema_version": 1,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "dataset_dir": str(dataset_dir),
+        "dataset_structure": dataset_structure or {"root": str(dataset_dir), "downloads_performed": False},
         "scientific_rules": [
             "No fabricated ground truth or accuracy.",
             "Relative geometry accuracy is separate from absolute georeferencing accuracy.",
@@ -78,9 +84,14 @@ def build_report(
         "baseline": baseline or {"status": "NOT_TESTED", "reason": "No baseline processed run was available."},
         "scenarios": scenarios,
         "metric_accuracy": metric_accuracy,
+        "object_detection_performance": object_detection or {"status": "NOT_TESTED"},
+        "object_3d_localization": object_localization or {"status": "NOT_TESTED"},
+        "three_d_completeness": completeness or {"status": "NOT_TESTED"},
         "evidence_score_validation": evidence_validation,
         "comparison_table": comparison_table,
         "ps_requirement_scorecard": scorecard,
+        "failure_taxonomy": FAILURE_TAXONOMY,
+        "visual_outputs": _visual_outputs(scenarios),
         "online_offline_analysis": {
             "online_candidates": ["frame extraction", "frame quality scoring", "object detection on decoded frames"],
             "offline_required": ["global reconstruction", "final georeferencing", "final metric/evidence analysis"],
@@ -111,7 +122,7 @@ def _score_status(
         return "PARTIAL" if scenario and scenario.get("status") != "NOT_TESTED" else "NOT_TESTED"
     if key == "limited_view" and evidence_validation.get("status") == "TESTED":
         return "PARTIAL"
-    if not scenario or scenario.get("status") == "NOT_TESTED":
+    if not scenario or scenario.get("status") != "TESTED":
         return "NOT_TESTED"
     if scenario.get("failure"):
         return "FAIL"
@@ -142,6 +153,12 @@ def _markdown(report: dict[str, Any]) -> str:
         f"Generated: {report['generated_at']}",
         f"Dataset: `{report['dataset_dir']}`",
         "",
+        "## Dataset Structure",
+        "",
+        "```json",
+        json.dumps(report["dataset_structure"], indent=2),
+        "```",
+        "",
         "## Baseline",
         "",
         "```json",
@@ -167,6 +184,41 @@ def _markdown(report: dict[str, Any]) -> str:
     lines.extend(
         [
             "",
+            "## Scenario Results",
+            "",
+        ]
+    )
+    for scenario in report["scenarios"]:
+        lines.extend(
+            [
+                f"### {scenario['label']}",
+                "",
+                "```json",
+                json.dumps(scenario, indent=2),
+                "```",
+                "",
+            ]
+        )
+    lines.extend(
+        [
+            "## Object Detection Performance",
+            "",
+            "```json",
+            json.dumps(report["object_detection_performance"], indent=2),
+            "```",
+            "",
+            "## 3D Object Localization",
+            "",
+            "```json",
+            json.dumps(report["object_3d_localization"], indent=2),
+            "```",
+            "",
+            "## 3D Completeness",
+            "",
+            "```json",
+            json.dumps(report["three_d_completeness"], indent=2),
+            "```",
+            "",
             "## Metric Accuracy",
             "",
             "```json",
@@ -178,6 +230,24 @@ def _markdown(report: dict[str, Any]) -> str:
             "```json",
             json.dumps(report["evidence_score_validation"], indent=2),
             "```",
+            "",
+            "## Failure Analysis",
+            "",
+            "```json",
+            json.dumps(report["failure_taxonomy"], indent=2),
+            "```",
+            "",
+            "## Visual Outputs",
+            "",
+            "```json",
+            json.dumps(report["visual_outputs"], indent=2),
+            "```",
+            "",
+            "## Online vs Offline",
+            "",
+            "```json",
+            json.dumps(report["online_offline_analysis"], indent=2),
+            "```",
         ]
     )
     return "\n".join(lines) + "\n"
@@ -188,3 +258,33 @@ def _cell(value: Any) -> str:
         return "None"
     text = json.dumps(value, sort_keys=True) if isinstance(value, (dict, list)) else str(value)
     return text.replace("|", "\\|").replace("\n", " ")
+
+
+def _visual_outputs(scenarios: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    outputs: list[dict[str, Any]] = []
+    for scenario in scenarios:
+        artifacts = scenario.get("generated_artifacts") or []
+        for artifact in artifacts:
+            if isinstance(artifact, dict) and artifact.get("output"):
+                outputs.append(
+                    {
+                        "scenario": scenario["scenario"],
+                        "type": "degraded_video",
+                        "path": artifact["output"],
+                        "honesty_note": "Generated artifact for side-by-side review; not an accuracy claim.",
+                    }
+                )
+    required = [
+        "original_vs_degraded_frame",
+        "original_vs_degraded_reconstruction",
+        "object_detection_comparison",
+        "evidence_map",
+        "ground_truth_vs_estimated_measurement",
+        "gps_perturbation_vs_georeferencing_error",
+        "performance_degradation_curves",
+    ]
+    existing_types = {item["type"] for item in outputs}
+    for item in required:
+        if item not in existing_types:
+            outputs.append({"type": item, "status": "NOT_GENERATED", "reason": "Requires measured degraded runs or ground truth artifacts."})
+    return outputs

@@ -3,6 +3,7 @@
   "single_pass": true,
   "source_video": "../baseline/../../test/example.mp4",
   "degradations": [
+    {"type": "compression", "level": 0, "jpeg_quality": 95},
     {"type": "compression", "level": 1, "jpeg_quality": 85},
     {"type": "compression", "level": 2, "jpeg_quality": 55},
     {"type": "compression", "level": 3, "jpeg_quality": 30}

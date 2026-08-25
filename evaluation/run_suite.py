@@ -4,15 +4,24 @@ from __future__ import annotations
 
 import argparse
 import json
+import platform
 import shutil
+import subprocess
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from pipeline.evaluation import evaluate_measurements
 
 from evaluation.failure import classify_failure
-from evaluation.metrics import evidence_score_validation, measurement_error_metrics
+from evaluation.metrics import (
+    completeness_metrics,
+    evidence_score_validation,
+    measurement_error_metrics,
+    object_detection_metrics,
+    object_localization_metrics,
+)
 from evaluation.perturbations import create_degraded_video
 from evaluation.reports import PS_CHALLENGES, build_report, write_reports
 
@@ -31,6 +40,127 @@ SCENARIOS = {
     "metric_accuracy": "METRIC ACCURACY",
     "processing_time": "PROCESSING TIME",
     "combined_stress": "COMBINED STRESS",
+}
+
+DEFAULT_SCENARIO_MANIFESTS: dict[str, dict[str, Any]] = {
+    "baseline": {
+        "scenario": "baseline",
+        "single_pass": True,
+        "source_video": "../../test/example.mp4",
+        "ground_truth": None,
+        "notes": [
+            "Baseline is the reference run before artificial degradation.",
+            "Accuracy is NOT_TESTED unless external ground truth is supplied.",
+        ],
+    },
+    "motion_blur": {
+        "scenario": "motion_blur",
+        "single_pass": True,
+        "source_video": "../baseline/../../test/example.mp4",
+        "degradations": [{"type": "motion_blur", "level": level} for level in (0, 1, 2, 3)],
+        "notes": ["Controlled blur levels are relative stress cases, not universal thresholds."],
+    },
+    "compression": {
+        "scenario": "compression",
+        "single_pass": True,
+        "source_video": "../baseline/../../test/example.mp4",
+        "degradations": [
+            {"type": "compression", "level": 0, "jpeg_quality": 95},
+            {"type": "compression", "level": 1, "jpeg_quality": 85},
+            {"type": "compression", "level": 2, "jpeg_quality": 55},
+            {"type": "compression", "level": 3, "jpeg_quality": 30},
+        ],
+        "notes": ["Records codec, resolution, and compression parameters for reproducibility."],
+    },
+    "illumination": {
+        "scenario": "illumination",
+        "single_pass": True,
+        "source_video": "../baseline/../../test/example.mp4",
+        "degradations": [
+            {"type": "dark", "level": 1},
+            {"type": "dark", "level": 3},
+            {"type": "bright", "level": 1},
+            {"type": "contrast", "level": 2},
+        ],
+        "notes": ["No image enhancement is applied before scoring unless it is part of SkyTrace itself."],
+    },
+    "shadows": {
+        "scenario": "shadows",
+        "single_pass": True,
+        "source_video": "../baseline/../../test/example.mp4",
+        "degradations": [{"type": "shadow", "level": level} for level in (1, 2, 3)],
+        "notes": ["Synthetic shadows mark a controlled occluding illumination stress, not a physical lighting model."],
+    },
+    "dynamic_objects": {
+        "scenario": "dynamic_objects",
+        "single_pass": True,
+        "required_scene_content": ["people", "cars", "trucks", "animals", "moving objects"],
+        "comparisons": ["raw_reconstruction", "dynamic_object_aware_reconstruction"],
+        "notes": ["Precision/recall remain NOT_TESTED until object labels are supplied."],
+    },
+    "gps_noise": {
+        "scenario": "gps_noise",
+        "single_pass": True,
+        "gps_noise_levels_metres": [0, 1, 5, 10, 20, 50],
+        "notes": ["Controlled perturbations are not real GPS distributions; relative and absolute accuracy are separate."],
+    },
+    "sensor_noise": {
+        "scenario": "sensor_noise",
+        "single_pass": True,
+        "imu_required": False,
+        "notes": ["If IMU metadata is unavailable, the report must say NOT_TESTED instead of fabricating sensor data."],
+    },
+    "limited_view": {
+        "scenario": "limited_view",
+        "single_pass": True,
+        "view_rule": "one_continuous_flight_path_only",
+        "surface_classes": ["directly_observed", "weakly_observed", "unseen"],
+        "notes": ["Unseen geometry must not receive the same confidence as directly observed surfaces."],
+    },
+    "occlusion": {
+        "scenario": "occlusion",
+        "single_pass": True,
+        "occluders": ["trees", "vehicles", "structures", "partially hidden objects"],
+        "notes": ["Observed surfaces must remain separate from inferred or uncertain regions."],
+    },
+    "no_gcp": {
+        "scenario": "no_gcp",
+        "single_pass": True,
+        "cases": ["no_gcp", "minimal_control_if_available", "higher_quality_reference_if_available"],
+        "notes": ["Zero-GCP reconstruction is quantified, not described as survey-grade."],
+    },
+    "metric_accuracy": {
+        "scenario": "metric_accuracy",
+        "single_pass": True,
+        "requires": ["ground_truth_measurements.json", "processed_run/analysis/measurements.json"],
+        "notes": ["Reports MAE, RMSE, median, maximum, absolute, and relative errors across matched measurements."],
+    },
+    "processing_time": {
+        "scenario": "processing_time",
+        "single_pass": True,
+        "stages": [
+            "frame_extraction",
+            "reconstruction",
+            "georeferencing",
+            "object_detection",
+            "object_3d_association",
+            "analysis",
+            "total",
+        ],
+        "notes": ["Real-time is supported only when measured processing time is not longer than video duration."],
+    },
+    "combined_stress": {
+        "scenario": "combined_stress",
+        "single_pass": True,
+        "scenarios": [
+            ["motion_blur", "compression"],
+            ["motion_blur", "gps_noise"],
+            ["occlusion", "dynamic_objects"],
+            ["illumination", "compression"],
+            ["motion_blur", "gps_noise", "dynamic_objects", "occlusion"],
+        ],
+        "notes": ["Combined stress exists to expose break points, not to manufacture success."],
+    },
 }
 
 
@@ -61,6 +191,7 @@ def run_suite(
 ) -> dict[str, Any]:
     dataset_dir.mkdir(parents=True, exist_ok=True)
     output_dir.mkdir(parents=True, exist_ok=True)
+    dataset_structure = ensure_dataset_structure(dataset_dir)
     baseline = collect_processed_run(processed_run) if processed_run.is_dir() else None
     scenarios = []
     for name in selected_scenarios:
@@ -76,14 +207,43 @@ def run_suite(
         )
 
     metric_accuracy = evaluate_metric_accuracy(dataset_dir, output_dir, processed_run)
+    object_detection = evaluate_object_detection(dataset_dir, processed_run)
+    object_localization = evaluate_object_localization(dataset_dir, processed_run)
+    completeness = evaluate_completeness(dataset_dir)
     evidence_validation = evaluate_evidence(processed_run, metric_accuracy)
     return build_report(
         dataset_dir=dataset_dir,
+        dataset_structure=dataset_structure,
         scenarios=scenarios,
         baseline=baseline,
         metric_accuracy=metric_accuracy,
+        object_detection=object_detection,
+        object_localization=object_localization,
+        completeness=completeness,
         evidence_validation=evidence_validation,
     )
+
+
+def ensure_dataset_structure(dataset_dir: Path) -> dict[str, Any]:
+    """Create a lightweight, reproducible Step 8 dataset layout without downloading data."""
+    created_dirs: list[str] = []
+    created_manifests: list[str] = []
+    for name, manifest in DEFAULT_SCENARIO_MANIFESTS.items():
+        scenario_dir = dataset_dir / name
+        if not scenario_dir.exists():
+            scenario_dir.mkdir(parents=True)
+            created_dirs.append(str(scenario_dir))
+        manifest_path = scenario_dir / "manifest.json"
+        if not manifest_path.exists():
+            manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+            created_manifests.append(str(manifest_path))
+    return {
+        "root": str(dataset_dir),
+        "scenario_directories": sorted(DEFAULT_SCENARIO_MANIFESTS),
+        "created_directories": created_dirs,
+        "created_manifests": created_manifests,
+        "downloads_performed": False,
+    }
 
 
 def evaluate_scenario(
@@ -119,10 +279,12 @@ def evaluate_scenario(
 
     failure = classify_failure(baseline.get("run_status") if baseline else None, metrics) if status == "TESTED" else None
     return {
+        "run_id": f"{name}-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}",
         "scenario": name,
         "label": SCENARIOS[name],
         "status": status,
         "single_pass": bool(manifest.get("single_pass", True)) if manifest else None,
+        "reproducibility": _reproducibility_metadata(name, manifest, processed_run, metrics),
         "manifest": manifest or None,
         "metrics": metrics,
         "failure": failure,
@@ -146,14 +308,22 @@ def collect_processed_run(run_dir: Path) -> dict[str, Any]:
     steps = run_status.get("steps", [])
     processing_seconds = sum(float(step.get("summary", {}).get("processing_time_seconds", 0.0) or 0.0) for step in steps)
     video_duration = _nested(video_meta, ["source_video", "duration_seconds"]) or _nested(video_meta, ["video", "duration_seconds"])
+    sampled_frames = _nested(video_meta, ["source_video", "frame_count"]) or video_meta.get("sampled_frame_count") or _step_summary(steps, 1, "sampled_frames")
+    selected_frames = video_meta.get("selected_frame_count") or _step_summary(steps, 1, "selected_frames")
+    rejected_frames = _step_summary(steps, 1, "rejected_frames")
+    registered_frames = reconstruction.get("registered_image_count") or _step_summary(steps, 2, "registered_images")
+    detected_objects = _step_summary(steps, 4, "detected_objects")
     metrics = {
         "video_duration_seconds": video_duration,
-        "input_frames": _nested(video_meta, ["source_video", "frame_count"]),
-        "selected_frames": video_meta.get("selected_frame_count"),
-        "registered_frames": reconstruction.get("registered_image_count"),
+        "input_frames": sampled_frames,
+        "selected_frames": selected_frames,
+        "frame_rejection_rate": (rejected_frames / sampled_frames if sampled_frames and rejected_frames is not None else None),
+        "registered_frames": registered_frames,
+        "registration_rate": (registered_frames / selected_frames if registered_frames is not None and selected_frames else None),
         "point_count": ply_count or analysis.get("point_count") or reconstruction.get("sparse_point_count"),
-        "detected_objects": _step_summary(steps, 4, "detected_objects"),
+        "detected_objects": detected_objects,
         "objects_3d": len(objects),
+        "object_3d_association_rate": (len(objects) / detected_objects if detected_objects else None),
         "quality_regions": len(quality.get("regions", [])) if isinstance(quality.get("regions"), list) else analysis.get("quality_region_count"),
         "dynamic_marker_count": analysis.get("dynamic_marker_count"),
         "trajectory_rmse_metres": georef.get("trajectory_rmse_metres"),
@@ -189,6 +359,29 @@ def evaluate_metric_accuracy(dataset_dir: Path, output_dir: Path, processed_run:
     return payload
 
 
+def evaluate_object_detection(dataset_dir: Path, processed_run: Path) -> dict[str, Any]:
+    ground_truth = dataset_dir / "object_labels.json"
+    predictions = processed_run / "scene_objects" / "objects_3d.json"
+    if not ground_truth.is_file() or not predictions.is_file():
+        return {"status": "NOT_TESTED", "reason": "Object detection needs object_labels.json and scene_objects/objects_3d.json."}
+    return object_detection_metrics(_load_json(predictions), _load_json(ground_truth))
+
+
+def evaluate_object_localization(dataset_dir: Path, processed_run: Path) -> dict[str, Any]:
+    ground_truth = dataset_dir / "object_positions_3d.json"
+    predictions = processed_run / "scene_objects" / "objects_3d.json"
+    if not ground_truth.is_file() or not predictions.is_file():
+        return {"status": "NOT_TESTED", "reason": "3D object localization needs object_positions_3d.json and scene_objects/objects_3d.json."}
+    return object_localization_metrics(_load_json(predictions), _load_json(ground_truth))
+
+
+def evaluate_completeness(dataset_dir: Path) -> dict[str, Any]:
+    ground_truth = dataset_dir / "surface_completeness.json"
+    if not ground_truth.is_file():
+        return {"status": "NOT_TESTED", "reason": "3D completeness needs surface_completeness.json with observed/reference surface areas."}
+    return completeness_metrics(_load_json(ground_truth))
+
+
 def evaluate_evidence(processed_run: Path, metric_accuracy: dict[str, Any]) -> dict[str, Any]:
     comparisons = _nested(metric_accuracy, ["metrics", "comparisons"]) or []
     if comparisons:
@@ -218,7 +411,37 @@ def _timing_metrics(baseline: dict[str, Any]) -> dict[str, Any]:
     metrics = dict(baseline.get("metrics", {}))
     ratio = metrics.get("processing_to_video_duration_ratio")
     metrics["real_time_claim_supported"] = bool(ratio is not None and ratio <= 1.0)
+    metrics["real_time_assessment"] = (
+        "Processing time was not recorded; no real-time claim is supported."
+        if ratio is None
+        else "Processing was no slower than video duration." if ratio <= 1.0
+        else "Processing took longer than video duration; near-real-time is not demonstrated."
+    )
     return metrics
+
+
+def _reproducibility_metadata(name: str, manifest: dict[str, Any], processed_run: Path, metrics: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "scenario": name,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "source_video": manifest.get("source_video"),
+        "video_duration_seconds": metrics.get("video_duration_seconds"),
+        "resolution": manifest.get("resolution"),
+        "frame_rate": manifest.get("frame_rate"),
+        "degradation_parameters": manifest.get("degradations") or manifest.get("gps_noise_levels_metres") or manifest.get("scenarios"),
+        "gps_perturbation": manifest.get("gps_noise_levels_metres"),
+        "processing_configuration": {"processed_run": str(processed_run)},
+        "software_version": {"python": platform.python_version(), "git_commit": _git_commit()},
+        "output_metrics": metrics,
+    }
+
+
+def _git_commit() -> str | None:
+    try:
+        result = subprocess.run(["git", "rev-parse", "--short", "HEAD"], check=False, capture_output=True, text=True)
+    except OSError:
+        return None
+    return result.stdout.strip() or None
 
 
 def _load_json(path: Path) -> dict[str, Any]:

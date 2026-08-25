@@ -1,0 +1,18 @@
+{
+  "scenario": "dynamic_objects",
+  "single_pass": true,
+  "required_scene_content": [
+    "people",
+    "cars",
+    "trucks",
+    "animals",
+    "moving objects"
+  ],
+  "comparisons": [
+    "raw_reconstruction",
+    "dynamic_object_aware_reconstruction"
+  ],
+  "notes": [
+    "Precision/recall remain NOT_TESTED until object labels are supplied."
+  ]
+}

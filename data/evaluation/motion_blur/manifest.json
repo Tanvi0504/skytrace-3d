@@ -3,6 +3,7 @@
   "single_pass": true,
   "source_video": "../baseline/../../test/example.mp4",
   "degradations": [
+    {"type": "motion_blur", "level": 0},
     {"type": "motion_blur", "level": 1},
     {"type": "motion_blur", "level": 2},
     {"type": "motion_blur", "level": 3}

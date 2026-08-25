@@ -1,0 +1,15 @@
+{
+  "scenario": "gps_noise",
+  "single_pass": true,
+  "gps_noise_levels_metres": [
+    0,
+    1,
+    5,
+    10,
+    20,
+    50
+  ],
+  "notes": [
+    "Controlled perturbations are not real GPS distributions; relative and absolute accuracy are separate."
+  ]
+}

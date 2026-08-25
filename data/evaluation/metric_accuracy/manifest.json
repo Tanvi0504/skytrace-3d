@@ -1,0 +1,11 @@
+{
+  "scenario": "metric_accuracy",
+  "single_pass": true,
+  "requires": [
+    "ground_truth_measurements.json",
+    "processed_run/analysis/measurements.json"
+  ],
+  "notes": [
+    "Reports MAE, RMSE, median, maximum, absolute, and relative errors across matched measurements."
+  ]
+}

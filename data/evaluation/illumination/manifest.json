@@ -1,0 +1,26 @@
+{
+  "scenario": "illumination",
+  "single_pass": true,
+  "source_video": "../baseline/../../test/example.mp4",
+  "degradations": [
+    {
+      "type": "dark",
+      "level": 1
+    },
+    {
+      "type": "dark",
+      "level": 3
+    },
+    {
+      "type": "bright",
+      "level": 1
+    },
+    {
+      "type": "contrast",
+      "level": 2
+    }
+  ],
+  "notes": [
+    "No image enhancement is applied before scoring unless it is part of SkyTrace itself."
+  ]
+}
