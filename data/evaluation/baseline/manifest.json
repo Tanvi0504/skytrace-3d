@@ -1,0 +1,10 @@
+{
+  "scenario": "baseline",
+  "single_pass": true,
+  "source_video": "../../test/example.mp4",
+  "processed_run": "../../../outputs/processed-demo",
+  "notes": [
+    "Baseline collection can use an existing processed run for reproducible Step 8 reporting.",
+    "Full reconstruction reruns are intentionally not automatic unless a user executes the pipeline separately."
+  ]
+}
