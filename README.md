@@ -24,16 +24,11 @@ The processing modules are deliberately conservative. GPS alignment residuals an
 ```bash
 git clone <repository-url> skytrace-3d
 cd skytrace-3d
-python3.11 -m venv .venv
-source .venv/bin/activate                 # Windows: .venv\Scripts\activate
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-cd frontend && npm ci && cd ..
-python -m skytrace.setup_models
-python -m skytrace.system_check
+./scripts/setup.sh
+./scripts/start.sh
 ```
 
-Install external tools before the last command. On Debian/Ubuntu use `sudo apt-get install ffmpeg colmap`; on macOS use your approved package manager (for example, Homebrew) and verify `ffmpeg -version` and `colmap -h` work. See [REPRODUCE.md](REPRODUCE.md) for the full fresh-machine sequence.
+`setup.sh` selects a native Python/Node setup when Python 3.11 and Node are available; otherwise it uses a running Docker Desktop/Engine. Use `SKYTRACE_SETUP_MODE=native` or `docker` to choose explicitly. Native setup requires FFmpeg and COLMAP on `PATH`; the Docker image installs both. Copy `.env.example` to `.env` before changing browser origins or the public API URL. See [REPRODUCE.md](REPRODUCE.md) and [the dependency reference](docs/dependencies.md) for complete environment details.
 
 ## Run one complete pipeline
 

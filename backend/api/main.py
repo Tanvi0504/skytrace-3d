@@ -19,15 +19,17 @@ from backend.models.contracts import (
     MeasurementRequest,
     ProcessRequest,
     RunStatus,
+    StepStatus,
     UploadResponse,
 )
 from backend.orchestration.pipeline_runner import start_background_run
 from backend.services.paths import MAX_UPLOAD_BYTES, resolve_in_run, run_dir, sanitize_filename
-from backend.services.run_store import attach_video, create_run, list_runs, load_status
+from backend.services.run_store import attach_video, create_run, list_runs, load_status, mark_step
 from backend.services.scene import evidence_for_run, objects_for_run, results_for_run, scene_metadata
 from skytrace.system_check import collect_checks
 
 app = FastAPI(title="SkyTrace API", version="0.10.0")
+READ_ONLY_RUN_IDS = {"processed-demo"}
 _cors_origins = [
     item.strip()
     for item in os.getenv(
@@ -45,6 +47,24 @@ app.add_middleware(
 )
 
 
+def _load_run_or_error(run_id: str) -> RunStatus:
+    """Map invalid and unknown run identifiers to client-safe HTTP errors."""
+    try:
+        return load_status(run_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail="Invalid run ID.") from exc
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail="Run not found.") from exc
+
+
+def _ensure_run_is_writable(run_id: str) -> None:
+    if run_id in READ_ONLY_RUN_IDS:
+        raise HTTPException(
+            status_code=409,
+            detail="The checked-in processed demo is read-only. Create a new analysis for an uploaded video.",
+        )
+
+
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok", "backend": "healthy", "run_storage": "filesystem"}
@@ -52,7 +72,7 @@ def health() -> dict[str, str]:
 
 @app.get("/health/dependencies")
 def dependency_health() -> dict:
-    report = collect_checks()
+    report = collect_checks(include_frontend=False)
     values = {item["name"]: item for item in report["checks"]}
     return {
         "backend": "healthy",
@@ -81,6 +101,8 @@ def create_processing_run() -> CreateRunResponse:
 
 @app.post("/runs/{run_id}/upload", response_model=UploadResponse)
 async def upload_video(run_id: str, file: UploadFile = File(...)) -> UploadResponse:
+    _load_run_or_error(run_id)
+    _ensure_run_is_writable(run_id)
     filename = sanitize_filename(file.filename or "")
     if Path(filename).suffix.lower() != ".mp4":
         raise HTTPException(status_code=400, detail="Only MP4 uploads are supported for this MVP.")
@@ -101,48 +123,48 @@ async def upload_video(run_id: str, file: UploadFile = File(...)) -> UploadRespo
 
 @app.post("/runs/{run_id}/process", response_model=RunStatus)
 def process_run(run_id: str, request: ProcessRequest, background_tasks: BackgroundTasks) -> RunStatus:
-    try:
-        status = load_status(run_id)
-    except FileNotFoundError as exc:
-        raise HTTPException(status_code=404, detail="Run not found.") from exc
+    status = _load_run_or_error(run_id)
+    _ensure_run_is_writable(run_id)
+    if status.state.value.startswith("RUNNING_"):
+        raise HTTPException(status_code=409, detail="This run is already processing.")
+    status = mark_step(run_id, 1, StepStatus.RUNNING)
     background_tasks.add_task(start_background_run, run_id, request)
     return status
 
 
 @app.get("/runs/{run_id}/status", response_model=RunStatus)
 def run_status(run_id: str) -> RunStatus:
-    try:
-        return load_status(run_id)
-    except FileNotFoundError as exc:
-        raise HTTPException(status_code=404, detail="Run not found.") from exc
+    return _load_run_or_error(run_id)
 
 
 @app.get("/runs/{run_id}/scene")
 def get_scene(run_id: str):
-    try:
-        return scene_metadata(run_id)
-    except FileNotFoundError as exc:
-        raise HTTPException(status_code=404, detail="Run not found.") from exc
+    _load_run_or_error(run_id)
+    return scene_metadata(run_id)
 
 
 @app.get("/runs/{run_id}/objects")
 def get_objects(run_id: str):
+    _load_run_or_error(run_id)
     return {"run_id": run_id, "objects": objects_for_run(run_id)}
 
 
 @app.get("/runs/{run_id}/evidence")
 def get_evidence(run_id: str):
+    _load_run_or_error(run_id)
     return evidence_for_run(run_id)
 
 
 @app.get("/runs/{run_id}/results")
 def get_results(run_id: str):
+    _load_run_or_error(run_id)
     return results_for_run(run_id)
 
 
 @app.post("/runs/{run_id}/measure")
 def measure(run_id: str, request: MeasurementRequest):
     started = time.monotonic()
+    _load_run_or_error(run_id)
     directory = run_dir(run_id)
     try:
         scene = load_scene_context(directory / "georeferenced", directory / "scene_objects", EvidenceConfig())
@@ -161,6 +183,7 @@ def measure(run_id: str, request: MeasurementRequest):
 
 @app.get("/runs/{run_id}/assets/{relative_path:path}")
 def run_asset(run_id: str, relative_path: str):
+    _load_run_or_error(run_id)
     try:
         path = resolve_in_run(run_id, relative_path)
     except ValueError as exc:

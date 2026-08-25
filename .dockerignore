@@ -1,0 +1,24 @@
+.git/
+.venv/
+.pytest_cache/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+
+# The frontend image installs exactly what package-lock.json specifies.
+frontend/node_modules/
+frontend/dist/
+
+# Never send local weights, results, or user uploads to the image builder.
+models/
+results/
+uploads/
+outputs/*
+!outputs/processed-demo/
+!outputs/processed-demo/**
+
+# Local environment and editor state.
+.env
+.env.*
+!.env.example
+.DS_Store

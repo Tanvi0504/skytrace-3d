@@ -7,6 +7,12 @@ This guide intentionally distinguishes an actual live run from the checked-in pr
 ```bash
 git clone <repository-url> skytrace-3d
 cd skytrace-3d
+./scripts/setup.sh
+```
+
+The setup script prefers a native setup when Python 3.11 and Node are available, and otherwise uses a running Docker daemon. Use `SKYTRACE_SETUP_MODE=native` or `SKYTRACE_SETUP_MODE=docker` to choose a path explicitly. The remainder of this section documents the native path if you need to inspect or customise it:
+
+```bash
 python3.11 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
@@ -77,9 +83,10 @@ Open `http://127.0.0.1:5173`. Run `python -m skytrace.demo_check` to check the p
 ## 6. Docker alternative
 
 ```bash
-python -m skytrace.setup_models
-docker compose up --build
-python -m skytrace.demo_check
+SKYTRACE_SETUP_MODE=docker ./scripts/setup.sh
+./scripts/start.sh
+# in a second terminal:
+docker run --rm --network skytrace-3d_default --entrypoint python skytrace-3d-backend -m skytrace.demo_check --backend-url http://backend:8000 --frontend-url http://frontend
 ```
 
 The frontend is `http://localhost:8080`; API is `http://localhost:8000`. The compose path is CPU-first. A GPU installation needs a host NVIDIA runtime, compatible CUDA/PyTorch/COLMAP stack, and a documented validation run; it is not silently selected.

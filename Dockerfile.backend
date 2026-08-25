@@ -12,7 +12,10 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt pyproject.toml README.md ./
-RUN pip install --no-cache-dir -r requirements.txt
+# Keep the CPU-first image free of CUDA wheels. Installing this exact CPU wheel
+# first also gives Ultralytics a reproducible compatible PyTorch dependency.
+RUN pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu torch==2.5.1 \
+    && pip install --no-cache-dir -r requirements.txt
 
 COPY backend ./backend
 COPY pipeline ./pipeline

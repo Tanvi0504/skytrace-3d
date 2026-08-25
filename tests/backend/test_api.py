@@ -49,6 +49,50 @@ def test_objects_endpoint_without_step_five_returns_empty_list():
     assert response.json()["objects"] == []
 
 
+@pytest.mark.parametrize("path", ["scene", "objects", "evidence", "results", "status"])
+def test_unknown_run_endpoints_return_not_found(path: str):
+    response = client.get(f"/runs/does-not-exist/{path}")
+
+    assert response.status_code == 404
+
+
+def test_invalid_run_id_returns_client_error():
+    response = client.get("/runs/invalid.run/status")
+
+    assert response.status_code == 400
+
+
+def test_upload_does_not_create_an_unknown_run():
+    response = client.post(
+        "/runs/does-not-exist/upload",
+        files={"file": ("flight.mp4", b"video", "video/mp4")},
+    )
+
+    assert response.status_code == 404
+
+
+def test_processed_demo_is_read_only():
+    upload = client.post(
+        "/runs/processed-demo/upload",
+        files={"file": ("flight.mp4", b"video", "video/mp4")},
+    )
+    process = client.post("/runs/processed-demo/process", json={})
+
+    assert upload.status_code == 409
+    assert process.status_code == 409
+
+
+def test_processing_run_cannot_start_a_second_worker():
+    from backend.models.contracts import StepStatus
+    from backend.services.run_store import mark_step
+
+    run_id = client.post("/runs").json()["run_id"]
+    mark_step(run_id, 1, StepStatus.RUNNING)
+    response = client.post(f"/runs/{run_id}/process", json={})
+
+    assert response.status_code == 409
+
+
 def test_safe_asset_endpoint_blocks_path_traversal():
     response = client.get("/runs/example/assets/%2E%2E/%2E%2E/requirements.txt")
     assert response.status_code == 400
@@ -70,9 +114,11 @@ def test_measurement_reports_unavailable_without_step_three():
 @pytest.fixture()
 def processed_run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     from backend.services import paths
+    from backend.services import run_store
     from backend.services import scene as scene_service
 
     monkeypatch.setattr(paths, "OUTPUTS_DIR", tmp_path)
+    monkeypatch.setattr(run_store, "OUTPUTS_DIR", tmp_path)
     monkeypatch.setattr(scene_service, "run_dir", lambda run_id: tmp_path / run_id)
     monkeypatch.setattr(scene_service, "relative_to_run", lambda run_id, path: str(Path(path).resolve().relative_to((tmp_path / run_id).resolve())).replace("\\", "/"))
     run_dir = tmp_path / "processed"

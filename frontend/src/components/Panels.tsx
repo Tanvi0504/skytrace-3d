@@ -7,7 +7,9 @@ export function UploadPanel({
   onCreate,
   onUpload,
   onProcess,
-  runId
+  runId,
+  readOnly = false,
+  processing = false
 }: {
   file?: File | null;
   runId?: string | null;
@@ -15,6 +17,8 @@ export function UploadPanel({
   onCreate: () => void;
   onUpload: () => void;
   onProcess: () => void;
+  readOnly?: boolean;
+  processing?: boolean;
 }) {
   return (
     <section className="toolbarBand">
@@ -24,12 +28,12 @@ export function UploadPanel({
       </div>
       <label className="fileControl">
         <Upload size={17} />
-        <input type="file" accept="video/mp4" onChange={(event) => onFile(event.target.files?.[0] ?? null)} />
+        <input type="file" accept="video/mp4" disabled={readOnly || processing} onChange={(event) => onFile(event.target.files?.[0] ?? null)} />
         <span>{file ? `${file.name} (${(file.size / 1024 / 1024).toFixed(1)} MB)` : "Choose MP4"}</span>
       </label>
       <button onClick={onCreate}>New Analysis</button>
-      <button onClick={onUpload} disabled={!file || !runId}>Upload</button>
-      <button onClick={onProcess} disabled={!runId}>
+      <button onClick={onUpload} disabled={!file || !runId || readOnly || processing}>Upload</button>
+      <button onClick={onProcess} disabled={!runId || readOnly || processing}>
         <Play size={16} /> Process
       </button>
     </section>
