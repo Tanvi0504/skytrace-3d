@@ -1,0 +1,14 @@
+schema_version: 1
+profile: demo
+description: Fast, transparent settings for a live demo; the checked-in processed demo remains the deterministic backup.
+
+frame_selection:
+  target_fps: 2.0
+
+reconstruction:
+  dense: false
+  max_image_size: 1600
+
+resource_limits:
+  max_selected_frames: 240
+  adaptive_frame_sampling: true

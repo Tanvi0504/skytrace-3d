@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import time
 from pathlib import Path
 
@@ -24,11 +25,20 @@ from backend.orchestration.pipeline_runner import start_background_run
 from backend.services.paths import MAX_UPLOAD_BYTES, resolve_in_run, run_dir, sanitize_filename
 from backend.services.run_store import attach_video, create_run, list_runs, load_status
 from backend.services.scene import evidence_for_run, objects_for_run, results_for_run, scene_metadata
+from skytrace.system_check import collect_checks
 
-app = FastAPI(title="SkyTrace API", version="0.7.0")
+app = FastAPI(title="SkyTrace API", version="0.10.0")
+_cors_origins = [
+    item.strip()
+    for item in os.getenv(
+        "SKYTRACE_CORS_ORIGINS",
+        "http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080,http://127.0.0.1:8080",
+    ).split(",")
+    if item.strip()
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=_cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -37,7 +47,25 @@ app.add_middleware(
 
 @app.get("/health")
 def health() -> dict[str, str]:
-    return {"status": "ok"}
+    return {"status": "ok", "backend": "healthy", "run_storage": "filesystem"}
+
+
+@app.get("/health/dependencies")
+def dependency_health() -> dict:
+    report = collect_checks()
+    values = {item["name"]: item for item in report["checks"]}
+    return {
+        "backend": "healthy",
+        "database": "not_required",
+        "reconstruction": "available" if values.get("COLMAP", {}).get("status") == "FOUND" else "unavailable",
+        "object_detection": "available"
+        if values.get("Model weights", {}).get("status") == "FOUND" and values.get("Ultralytics", {}).get("status") == "FOUND"
+        else "unavailable",
+        "measurement": "available",
+        "ffmpeg": "available" if values.get("FFmpeg", {}).get("status") == "FOUND" else "unavailable",
+        "gpu": values.get("GPU", {}).get("status", "UNKNOWN").lower(),
+        "system_status": report["status"],
+    }
 
 
 @app.get("/runs")
@@ -140,4 +168,3 @@ def run_asset(run_id: str, relative_path: str):
     if not path.is_file():
         raise HTTPException(status_code=404, detail="File not found.")
     return FileResponse(path)
-

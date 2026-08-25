@@ -96,6 +96,18 @@ main {
   background: #312617;
 }
 
+.demoNotice {
+  margin: 0.8rem 1rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid #c97700;
+  border-radius: 0.45rem;
+  background: #fff7df;
+  color: #744200;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
 .progressStrip {
   display: grid;
   grid-template-columns: repeat(6, minmax(8rem, 1fr));

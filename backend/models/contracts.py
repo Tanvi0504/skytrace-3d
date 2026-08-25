@@ -71,8 +71,9 @@ class ProcessRequest(BaseModel):
     target_fps: float = 5.0
     blur_threshold: float = 100.0
     dense: bool = True
-    overwrite: bool = True
+    overwrite: bool = False
     gps_metadata_filename: str | None = None
+    resume: bool = False
 
 
 class Point3D(BaseModel):
@@ -134,4 +135,3 @@ class ResultsInfo(BaseModel):
     run_id: str
     files: dict[str, str]
     warnings: list[str] = Field(default_factory=list)
-

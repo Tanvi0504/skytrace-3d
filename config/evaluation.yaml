@@ -1,0 +1,13 @@
+schema_version: 1
+profile: evaluation
+description: Reproducible evaluation profile; no unmeasured accuracy tuning is enabled.
+
+reconstruction:
+  dense: false
+  use_gpu: false
+
+object_detection:
+  device: cpu
+
+resource_limits:
+  adaptive_frame_sampling: false

@@ -1,0 +1,81 @@
+schema_version: 1
+profile: default
+description: Conservative production defaults for the integrated SkyTrace pipeline.
+
+input:
+  allowed_extensions: [".mp4", ".mov", ".avi", ".mkv"]
+
+frame_selection:
+  target_fps: 5.0
+  blur_threshold: 100.0
+  jpeg_quality: 95
+
+reconstruction:
+  backend: colmap
+  colmap_executable: colmap
+  dense: true
+  matcher: sequential
+  use_gpu: false
+  max_image_size: 2000
+  single_camera: true
+  minimum_selected_frames: 8
+  overwrite_stage_outputs: false
+
+georeferencing:
+  timestamp_tolerance_seconds: 1.0
+  ransac_threshold_metres: 10.0
+  ransac_iterations: 300
+  source_scale_mode: auto
+  continue_without_gps: true
+  overwrite_stage_outputs: false
+
+object_detection:
+  model_path: models/yolo11n.pt
+  confidence_threshold: 0.25
+  iou_threshold: 0.70
+  classes: null
+  tracking: true
+  tracker_config: bytetrack.yaml
+  device: cpu
+  mask_padding_pixels: 0
+  overwrite_stage_outputs: false
+
+object_association:
+  minimum_ray_angle_degrees: 1.0
+  max_normalized_ray_residual: 0.25
+  max_condition_number: 100000000.0
+  overwrite_stage_outputs: false
+
+analysis:
+  overwrite_stage_outputs: false
+
+evidence:
+  density_radius_metres: 3.0
+  density_target_points: 20
+  camera_support_radius_metres: 80.0
+  camera_target_count: 4
+  view_diversity_target_degrees: 30.0
+  density_weight: 0.50
+  nearby_camera_weight: 0.25
+  view_diversity_weight: 0.25
+  dynamic_contamination_radius_metres: 3.0
+  dynamic_contamination_target_count: 1
+  dynamic_contamination_penalty: 0.25
+  high_threshold: 0.75
+  medium_threshold: 0.50
+  low_threshold: 0.25
+  quality_grid_cell_size_metres: 5.0
+  max_quality_regions: 10000
+  segment_samples: 5
+  minimum_segment_supported_fraction: 0.50
+
+visualization:
+  max_browser_points: 250000
+  point_decimation: display_only
+  preserve_source_artifacts: true
+
+resource_limits:
+  max_video_bytes: 1073741824
+  max_selected_frames: 2000
+  minimum_free_disk_bytes: 10737418240
+  adaptive_frame_sampling: false

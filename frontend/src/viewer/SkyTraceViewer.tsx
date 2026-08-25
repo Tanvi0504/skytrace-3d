@@ -30,10 +30,13 @@ const EVIDENCE_COLORS: Record<string, string> = {
   LOW: "#f36f5f",
   INSUFFICIENT: "#8d97a5"
 };
+const MAX_RENDER_MARKERS = 500;
+const MAX_RENDER_EVIDENCE_REGIONS = 500;
 
 export function SkyTraceViewer({ asset, objects, evidence, evidenceMode, measuring, selectedPoints, onPoint, onObject }: Props) {
   const controls = useRef<OrbitControlsImpl | null>(null);
-  const selectableObjects = objects.filter((object) => object.position && object.position.length === 3);
+  const allSelectableObjects = objects.filter((object) => object.position && object.position.length === 3);
+  const selectableObjects = allSelectableObjects.slice(0, MAX_RENDER_MARKERS);
 
   function handleSceneClick(event: ThreeEvent<MouseEvent>) {
     if (!measuring) return;
@@ -75,6 +78,7 @@ export function SkyTraceViewer({ asset, objects, evidence, evidenceMode, measuri
                   </mesh>
                 );
               })}
+              {allSelectableObjects.length > selectableObjects.length && <Html center className="emptyScene">Only the first {MAX_RENDER_MARKERS} object markers are displayed to protect browser responsiveness.</Html>}
               {selectedPoints.map((point, index) => (
                 <mesh key={`${point.join(",")}-${index}`} position={[point[0], point[1], point[2]]}>
                   <sphereGeometry args={[0.22, 16, 16]} />
@@ -101,7 +105,8 @@ function MeasurementLine({ points }: { points: number[][] }) {
 }
 
 function EvidenceOverlay({ evidence }: { evidence?: EvidenceInfo | null }) {
-  const regions = evidence?.quality_regions ?? [];
+  const allRegions = evidence?.quality_regions ?? [];
+  const regions = allRegions.slice(0, MAX_RENDER_EVIDENCE_REGIONS);
   return (
     <>
       {regions.map((region, index) => {
@@ -119,6 +124,7 @@ function EvidenceOverlay({ evidence }: { evidence?: EvidenceInfo | null }) {
           </mesh>
         );
       })}
+      {allRegions.length > regions.length && <Html center className="emptyScene">Only the first {MAX_RENDER_EVIDENCE_REGIONS} evidence regions are displayed to protect browser responsiveness.</Html>}
     </>
   );
 }

@@ -1,0 +1,23 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./outputs:/app/outputs
+      - ./models:/app/models:ro
+    environment:
+      SKYTRACE_CORS_ORIGINS: http://localhost:8080,http://127.0.0.1:8080
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      args:
+        VITE_SKYTRACE_API_BASE: http://localhost:8000
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
