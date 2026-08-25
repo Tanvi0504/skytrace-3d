@@ -92,12 +92,14 @@ export function DetailsPanel({
             <dt>Observations</dt><dd>{selected.observation_count ?? "Unknown"}</dd>
             <dt>Evidence</dt><dd>{selected.evidence_level}</dd>
             <dt>Motion</dt><dd>{selected.motion_status === "unknown" ? "Motion status unknown" : selected.motion_status}</dd>
+            {selected.warnings.length > 0 && <><dt>Warnings</dt><dd>{selected.warnings.join(" | ")}</dd></>}
           </dl>
         ) : <p>Select a marker or object row.</p>}
       </div>
       <div className="panel">
         <h2>Evidence</h2>
         {evidence && Object.entries(evidence.levels).map(([level, text]) => <p key={level}><strong>{level}</strong> = {text}</p>)}
+        {evidence?.warnings.map((warning) => <p className="warningText" key={warning}><AlertTriangle size={14} /> {warning}</p>)}
         {measurement && <MeasurementBlock measurement={measurement} />}
       </div>
       <div className="panel">
@@ -120,6 +122,7 @@ function MeasurementBlock({ measurement }: { measurement: MeasurementResult }) {
   return (
     <div className={risky ? "measurement warningBox" : "measurement"}>
       <strong>Distance {measurement.distance_3d.toFixed(2)} {measurement.unit}</strong>
+      <span>Status: {measurement.measurement_status}</span>
       <span>Horizontal: {measurement.horizontal_distance?.toFixed(2) ?? "Unavailable"}</span>
       <span>Vertical: {measurement.vertical_difference?.toFixed(2) ?? "Unavailable"}</span>
       <span>Evidence: {measurement.evidence_level}</span>
@@ -127,4 +130,3 @@ function MeasurementBlock({ measurement }: { measurement: MeasurementResult }) {
     </div>
   );
 }
-

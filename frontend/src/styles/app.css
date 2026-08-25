@@ -162,6 +162,22 @@ main {
   font-size: 0.72rem;
 }
 
+.evidenceLabel, .emptyScene {
+  pointer-events: none;
+  white-space: nowrap;
+  border-radius: 4px;
+  padding: 0.2rem 0.38rem;
+  background: rgba(16, 20, 25, 0.86);
+  color: #edf3f1;
+  font-size: 0.72rem;
+}
+
+.emptyScene {
+  width: min(18rem, 80vw);
+  white-space: normal;
+  text-align: center;
+}
+
 .detailsGrid {
   display: grid;
   grid-template-columns: 1fr 1fr 1.1fr 1.1fr;
@@ -252,4 +268,3 @@ dd {
     min-height: 45vh;
   }
 }
-

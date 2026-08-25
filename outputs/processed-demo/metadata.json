@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "run_id": "processed-demo",
+  "video": {
+    "filename": "processed-demo.mp4",
+    "duration_seconds": 4.8
+  },
+  "sampled_frame_count": 24,
+  "selected_frame_count": 12,
+  "warnings": []
+}

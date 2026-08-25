@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "success": true,
+  "point_count": 9,
+  "camera_count": 3,
+  "dynamic_marker_count": 1,
+  "quality_region_count": 2,
+  "measurement_count": 0,
+  "evidence_processing_time_seconds": 0.0012,
+  "coordinate_system": "local east-north-up metres",
+  "warnings": [
+    "Evidence scores are reconstruction-support heuristics, not accuracy percentages."
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "description": "Compact Step 6-style quality regions for Step 7 integration testing.",
+  "source_point_cloud": "outputs/processed-demo/georeferenced/point_cloud_georef.ply",
+  "coordinate_system": "local east-north-up metres",
+  "requested_cell_size_metres": 5.0,
+  "effective_cell_size_metres": 5.0,
+  "regions": [
+    {
+      "grid_cell": [0, 0, 0],
+      "centre": [2.5, 2.5, 2.5],
+      "cell_size_metres": 5.0,
+      "source_point_count_in_cell": 7,
+      "evidence_score": 0.61,
+      "evidence_level": "MEDIUM",
+      "direct_observation_status": "UNKNOWN",
+      "signals": {}
+    },
+    {
+      "grid_cell": [-1, -1, 0],
+      "centre": [-2.5, -2.5, 2.5],
+      "cell_size_metres": 5.0,
+      "source_point_count_in_cell": 1,
+      "evidence_score": 0.23,
+      "evidence_level": "INSUFFICIENT",
+      "direct_observation_status": "UNKNOWN",
+      "signals": {}
+    }
+  ]
+}

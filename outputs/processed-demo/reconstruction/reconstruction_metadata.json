@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "success": true,
+  "input_image_count": 12,
+  "registered_image_count": 10,
+  "sparse_point_count": 9,
+  "dense_status": "not_requested_for_demo",
+  "warnings": [
+    "Processed-demo is a compact checked-in artifact for Step 7 UI integration."
+  ]
+}

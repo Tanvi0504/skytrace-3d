@@ -106,10 +106,9 @@ export default function App() {
             <Ruler size={16} /> Measure Distance
           </button>
         </div>
-        <SkyTraceViewer asset={asset} objects={objects} evidenceMode={evidenceMode} measuring={measuring} selectedPoints={points} onPoint={handlePoint} onObject={setSelected} />
+        <SkyTraceViewer asset={asset} objects={objects} evidence={evidence} evidenceMode={evidenceMode} measuring={measuring} selectedPoints={points} onPoint={handlePoint} onObject={setSelected} />
       </section>
       <DetailsPanel scene={scene} objects={objects} selected={selected} evidence={evidence} measurement={measurement} onSelect={setSelected} onDownload={downloadResults} />
     </main>
   );
 }
-

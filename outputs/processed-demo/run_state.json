@@ -1,0 +1,91 @@
+{
+  "run_id": "processed-demo",
+  "state": "COMPLETED",
+  "created_at": "2026-08-25T12:00:00+00:00",
+  "updated_at": "2026-08-25T12:00:06+00:00",
+  "video_filename": "processed-demo.mp4",
+  "video_size_bytes": 1048576,
+  "error": null,
+  "steps": [
+    {
+      "step": 1,
+      "name": "Frame extraction",
+      "status": "COMPLETED",
+      "summary": {
+        "sampled_frames": 24,
+        "selected_frames": 12,
+        "rejected_frames": 2
+      },
+      "warnings": [],
+      "error": null
+    },
+    {
+      "step": 2,
+      "name": "3D reconstruction",
+      "status": "COMPLETED",
+      "summary": {
+        "input_images": 12,
+        "registered_images": 10,
+        "sparse_points": 9,
+        "dense_status": "not_requested_for_demo"
+      },
+      "warnings": [
+        "Processed-demo uses a compact checked-in PLY for UI integration testing."
+      ],
+      "error": null
+    },
+    {
+      "step": 3,
+      "name": "Georeferencing",
+      "status": "COMPLETED",
+      "summary": {
+        "gps_observations": 3,
+        "matched_poses": 3,
+        "inliers": 3,
+        "estimated_scale": 1.0
+      },
+      "warnings": [],
+      "error": null
+    },
+    {
+      "step": 4,
+      "name": "Object detection",
+      "status": "COMPLETED",
+      "summary": {
+        "frames_processed": 12,
+        "detected_objects": 2,
+        "tracks": 2
+      },
+      "warnings": [],
+      "error": null
+    },
+    {
+      "step": 5,
+      "name": "3D object association",
+      "status": "COMPLETED",
+      "summary": {
+        "tracks": 2,
+        "estimated": 1,
+        "low_confidence": 1,
+        "unavailable": 0
+      },
+      "warnings": [],
+      "error": null
+    },
+    {
+      "step": 6,
+      "name": "Measurement / reliability analysis",
+      "status": "COMPLETED",
+      "summary": {
+        "points": 9,
+        "cameras": 3,
+        "quality_regions": 2,
+        "dynamic_markers": 1
+      },
+      "warnings": [
+        "Evidence scores are reconstruction-support heuristics, not accuracy percentages."
+      ],
+      "error": null
+    }
+  ]
+}

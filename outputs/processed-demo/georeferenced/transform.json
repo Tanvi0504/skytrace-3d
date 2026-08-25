@@ -1,0 +1,11 @@
+{
+  "target_coordinate_system": "local east-north-up metres",
+  "transform": {
+    "matrix_4x4": [
+      [1, 0, 0, 0],
+      [0, 1, 0, 0],
+      [0, 0, 1, 0],
+      [0, 0, 0, 1]
+    ]
+  }
+}

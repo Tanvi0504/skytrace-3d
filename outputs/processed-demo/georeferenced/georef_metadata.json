@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "success": true,
+  "gps_observation_count": 3,
+  "matched_pose_count": 3,
+  "inlier_count": 3,
+  "estimated_scale": 1.0,
+  "warnings": []
+}
