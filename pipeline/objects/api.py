@@ -209,7 +209,7 @@ def detect_and_track_objects(
                     frame_detections,
                     padding_pixels=config.mask_padding_pixels,
                 )
-                relative_mask_path = str(mask_path.relative_to(config.output_dir))
+                relative_mask_path = mask_path.relative_to(config.output_dir).as_posix()
                 for item in frame_detections:
                     item.mask_path = relative_mask_path
             except (ObjectPipelineError, OSError) as exc:

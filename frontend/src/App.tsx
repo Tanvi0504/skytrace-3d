@@ -1,0 +1,115 @@
+import { useEffect, useMemo, useState } from "react";
+import { Activity, Ruler } from "lucide-react";
+import { DetailsPanel, ProgressPanel, UploadPanel } from "./components/Panels";
+import { api } from "./services/api";
+import type { EvidenceInfo, MeasurementResult, Object3D, RunStatus, SceneMetadata } from "./types/api";
+import { SkyTraceViewer } from "./viewer/SkyTraceViewer";
+import "./styles/app.css";
+
+export default function App() {
+  const initialRun = window.location.pathname.startsWith("/viewer/") ? window.location.pathname.split("/").pop() : null;
+  const [runId, setRunId] = useState<string | null>(initialRun ?? "example");
+  const [file, setFile] = useState<File | null>(null);
+  const [status, setStatus] = useState<RunStatus | null>(null);
+  const [scene, setScene] = useState<SceneMetadata | null>(null);
+  const [objects, setObjects] = useState<Object3D[]>([]);
+  const [selected, setSelected] = useState<Object3D | null>(null);
+  const [evidence, setEvidence] = useState<EvidenceInfo | null>(null);
+  const [evidenceMode, setEvidenceMode] = useState(false);
+  const [measuring, setMeasuring] = useState(false);
+  const [points, setPoints] = useState<number[][]>([]);
+  const [measurement, setMeasurement] = useState<MeasurementResult | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+
+  const asset = useMemo(() => scene?.assets[0], [scene]);
+
+  useEffect(() => {
+    if (!runId) return;
+    void refresh(runId);
+    const timer = window.setInterval(() => void refresh(runId), 3000);
+    return () => window.clearInterval(timer);
+  }, [runId]);
+
+  async function refresh(id: string) {
+    try {
+      const [nextStatus, nextScene, objectPayload, nextEvidence] = await Promise.all([
+        api.getStatus(id),
+        api.getScene(id),
+        api.getObjects(id),
+        api.getEvidence(id)
+      ]);
+      setStatus(nextStatus);
+      setScene(nextScene);
+      setObjects(objectPayload.objects);
+      setEvidence(nextEvidence);
+      setMessage(null);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Could not load run.");
+    }
+  }
+
+  async function createRun() {
+    const response = await api.createRun();
+    setRunId(response.run_id);
+    setStatus(response.status);
+    setScene(null);
+    setObjects([]);
+  }
+
+  async function upload() {
+    if (!runId || !file) return;
+    await api.uploadVideo(runId, file);
+    await refresh(runId);
+  }
+
+  async function process() {
+    if (!runId) return;
+    await api.startProcessing(runId);
+    await refresh(runId);
+  }
+
+  async function handlePoint(point: number[]) {
+    const next = points.length >= 2 ? [point] : [...points, point];
+    setPoints(next);
+    if (runId && next.length === 2) {
+      try {
+        setMeasurement(await api.measure(runId, next[0], next[1]));
+      } catch (error) {
+        setMessage(error instanceof Error ? error.message : "Measurement unavailable.");
+      }
+    }
+  }
+
+  async function downloadResults() {
+    if (!runId) return;
+    const results = await api.getResults(runId);
+    const blob = new Blob([JSON.stringify(results, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `skytrace-${runId}-results.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  return (
+    <main>
+      <UploadPanel file={file} runId={runId} onFile={setFile} onCreate={createRun} onUpload={upload} onProcess={process} />
+      {message && <div className="message">{message}</div>}
+      <ProgressPanel status={status} />
+      <section className="viewerBand">
+        <div className="viewerActions">
+          <button className={evidenceMode ? "active" : ""} onClick={() => setEvidenceMode((value) => !value)}>
+            <Activity size={16} /> Evidence View
+          </button>
+          <button className={measuring ? "active" : ""} onClick={() => { setMeasuring((value) => !value); setPoints([]); }}>
+            <Ruler size={16} /> Measure Distance
+          </button>
+        </div>
+        <SkyTraceViewer asset={asset} objects={objects} evidenceMode={evidenceMode} measuring={measuring} selectedPoints={points} onPoint={handlePoint} onObject={setSelected} />
+      </section>
+      <DetailsPanel scene={scene} objects={objects} selected={selected} evidence={evidence} measurement={measurement} onSelect={setSelected} onDownload={downloadResults} />
+    </main>
+  );
+}
+
