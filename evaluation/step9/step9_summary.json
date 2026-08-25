@@ -1,0 +1,370 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-25T15:22:17.920849+00:00",
+  "step8_report": "evaluation\\results\\robustness_report.json",
+  "after_report": "evaluation\\step9\\after_step8\\robustness_report.json",
+  "dataset_dir": "data\\evaluation",
+  "baseline_config": "config\\baseline.yaml",
+  "improved_config": "config\\robustness.yaml",
+  "scientific_note": "Accuracy improvements are NOT_TESTED unless Step 8/9 reports contain ground truth.",
+  "failure_priorities": [
+    {
+      "failure": "gps_noise",
+      "ps_requirement": "GPS inaccuracies",
+      "severity": "high",
+      "observed_impact": "GPS inaccuracies could not be measured from available Step 8 artifacts.",
+      "affected_stage": "georeferencing",
+      "evidence": "Controlled degraded videos exist, but scenario metrics remain empty because they were not run through the full pipeline.",
+      "technically_addressable": false,
+      "requires_more_data": true,
+      "mvp_realism": "Needs more evaluation data before algorithmic tuning is scientifically justified.",
+      "recommended_action": "Run controlled GPS perturbation cases and compare absolute georeferencing vs relative geometry."
+    },
+    {
+      "failure": "limited_view",
+      "ps_requirement": "Limited viewing angles",
+      "severity": "high",
+      "observed_impact": "Limited viewing angles could not be measured from available Step 8 artifacts.",
+      "affected_stage": "measurement_evidence",
+      "evidence": "Controlled degraded videos exist, but scenario metrics remain empty because they were not run through the full pipeline.",
+      "technically_addressable": true,
+      "requires_more_data": true,
+      "mvp_realism": "Needs more evaluation data before algorithmic tuning is scientifically justified.",
+      "recommended_action": "Add surface-completeness ground truth; improve evidence propagation before geometry inference."
+    },
+    {
+      "failure": "metric_accuracy",
+      "ps_requirement": "Metric accuracy",
+      "severity": "high",
+      "observed_impact": "Metric accuracy could not be measured from available Step 8 artifacts.",
+      "affected_stage": "measurement_evidence",
+      "evidence": "Controlled degraded videos exist, but scenario metrics remain empty because they were not run through the full pipeline.",
+      "technically_addressable": true,
+      "requires_more_data": true,
+      "mvp_realism": "Needs more evaluation data before algorithmic tuning is scientifically justified.",
+      "recommended_action": "Collect ground_truth_measurements.json and keep low-evidence measurements visibly unreliable."
+    },
+    {
+      "failure": "processing_time",
+      "ps_requirement": "Real-time / near-real-time processing",
+      "severity": "high",
+      "observed_impact": "Step 8 baseline has video_duration_seconds=4.8 but total_processing_time_seconds is null.",
+      "affected_stage": "evaluation",
+      "evidence": "robustness_report.json baseline.metrics.total_processing_time_seconds == null.",
+      "technically_addressable": true,
+      "requires_more_data": false,
+      "mvp_realism": "Instrumentation is realistic in the MVP; real-time optimization needs measured timings first.",
+      "recommended_action": "Add per-stage timing to future run_state summaries and rerun Step 8."
+    },
+    {
+      "failure": "compression",
+      "ps_requirement": "Video compression",
+      "severity": "medium",
+      "observed_impact": "Video compression could not be measured from available Step 8 artifacts.",
+      "affected_stage": "evaluation",
+      "evidence": "Controlled degraded videos exist, but scenario metrics remain empty because they were not run through the full pipeline.",
+      "technically_addressable": false,
+      "requires_more_data": true,
+      "mvp_realism": "Needs more evaluation data before algorithmic tuning is scientifically justified.",
+      "recommended_action": "Supply the missing Step 8 dataset/ground truth before tuning algorithms."
+    },
+    {
+      "failure": "dynamic_objects",
+      "ps_requirement": "Dynamic objects",
+      "severity": "medium",
+      "observed_impact": "Dynamic objects could not be measured from available Step 8 artifacts.",
+      "affected_stage": "evaluation",
+      "evidence": "Controlled degraded videos exist, but scenario metrics remain empty because they were not run through the full pipeline.",
+      "technically_addressable": true,
+      "requires_more_data": true,
+      "mvp_realism": "Needs more evaluation data before algorithmic tuning is scientifically justified.",
+      "recommended_action": "Add object labels and compare raw vs dynamic-aware reconstruction only when both runs exist."
+    },
+    {
+      "failure": "illumination",
+      "ps_requirement": "Variable illumination",
+      "severity": "medium",
+      "observed_impact": "Variable illumination could not be measured from available Step 8 artifacts.",
+      "affected_stage": "evaluation",
+      "evidence": "Controlled degraded videos exist, but scenario metrics remain empty because they were not run through the full pipeline.",
+      "technically_addressable": false,
+      "requires_more_data": true,
+      "mvp_realism": "Needs more evaluation data before algorithmic tuning is scientifically justified.",
+      "recommended_action": "Supply the missing Step 8 dataset/ground truth before tuning algorithms."
+    },
+    {
+      "failure": "motion_blur",
+      "ps_requirement": "Motion blur",
+      "severity": "medium",
+      "observed_impact": "Motion blur could not be measured from available Step 8 artifacts.",
+      "affected_stage": "frame_ingestion",
+      "evidence": "Controlled degraded videos exist, but scenario metrics remain empty because they were not run through the full pipeline.",
+      "technically_addressable": false,
+      "requires_more_data": true,
+      "mvp_realism": "Needs more evaluation data before algorithmic tuning is scientifically justified.",
+      "recommended_action": "Supply the missing Step 8 dataset/ground truth before tuning algorithms."
+    },
+    {
+      "failure": "no_gcp",
+      "ps_requirement": "Lack of Ground Control Points",
+      "severity": "medium",
+      "observed_impact": "Lack of Ground Control Points could not be measured from available Step 8 artifacts.",
+      "affected_stage": "georeferencing",
+      "evidence": "Controlled degraded videos exist, but scenario metrics remain empty because they were not run through the full pipeline.",
+      "technically_addressable": false,
+      "requires_more_data": true,
+      "mvp_realism": "Needs more evaluation data before algorithmic tuning is scientifically justified.",
+      "recommended_action": "Supply the missing Step 8 dataset/ground truth before tuning algorithms."
+    },
+    {
+      "failure": "occlusion",
+      "ps_requirement": "Occluded surfaces",
+      "severity": "medium",
+      "observed_impact": "Occluded surfaces could not be measured from available Step 8 artifacts.",
+      "affected_stage": "measurement_evidence",
+      "evidence": "Controlled degraded videos exist, but scenario metrics remain empty because they were not run through the full pipeline.",
+      "technically_addressable": true,
+      "requires_more_data": true,
+      "mvp_realism": "Needs more evaluation data before algorithmic tuning is scientifically justified.",
+      "recommended_action": "Supply occlusion/completeness annotations and preserve observed vs uncertain geometry labels."
+    },
+    {
+      "failure": "sensor_noise",
+      "ps_requirement": "Sensor noise",
+      "severity": "medium",
+      "observed_impact": "Sensor noise could not be measured from available Step 8 artifacts.",
+      "affected_stage": "reconstruction",
+      "evidence": "Controlled degraded videos exist, but scenario metrics remain empty because they were not run through the full pipeline.",
+      "technically_addressable": false,
+      "requires_more_data": true,
+      "mvp_realism": "Needs more evaluation data before algorithmic tuning is scientifically justified.",
+      "recommended_action": "Supply the missing Step 8 dataset/ground truth before tuning algorithms."
+    },
+    {
+      "failure": "shadows",
+      "ps_requirement": "Shadows",
+      "severity": "medium",
+      "observed_impact": "Shadows could not be measured from available Step 8 artifacts.",
+      "affected_stage": "evaluation",
+      "evidence": "Controlled degraded videos exist, but scenario metrics remain empty because they were not run through the full pipeline.",
+      "technically_addressable": false,
+      "requires_more_data": true,
+      "mvp_realism": "Needs more evaluation data before algorithmic tuning is scientifically justified.",
+      "recommended_action": "Supply the missing Step 8 dataset/ground truth before tuning algorithms."
+    }
+  ],
+  "implemented_improvements": [
+    {
+      "scenario": "processing_time",
+      "metric": "processing_time_observability",
+      "before": "future backend runs did not include per-stage processing_time_seconds in run_state summaries",
+      "after": "future backend runs include per-stage processing_time_seconds for Steps 1-6",
+      "change": "instrumentation added",
+      "improved": true,
+      "reason": "Step 8 could not support a real-time claim because total_processing_time_seconds was null."
+    },
+    {
+      "scenario": "metric_accuracy",
+      "metric": "measurement_reliability_status",
+      "before": "measurements used ESTIMATED or INSUFFICIENT_EVIDENCE",
+      "after": "measurements use MEASUREMENT_AVAILABLE, MEASUREMENT_AVAILABLE_WITH_WARNING, or MEASUREMENT_NOT_RELIABLE",
+      "change": "status contract strengthened",
+      "improved": true,
+      "reason": "Step 8 emphasized not returning confident measurements where evidence is weak."
+    }
+  ],
+  "step9_comparison": [
+    {
+      "scenario": "baseline",
+      "metric": "registered_frames",
+      "before": 10,
+      "after": 10,
+      "change": 0.0,
+      "improved": null,
+      "reason": "No measured Step 9 pipeline rerun with changed algorithm output was available."
+    },
+    {
+      "scenario": "baseline",
+      "metric": "registration_rate",
+      "before": 0.8333333333333334,
+      "after": 0.8333333333333334,
+      "change": 0.0,
+      "improved": null,
+      "reason": "No measured Step 9 pipeline rerun with changed algorithm output was available."
+    },
+    {
+      "scenario": "baseline",
+      "metric": "point_count",
+      "before": 9,
+      "after": 9,
+      "change": 0.0,
+      "improved": null,
+      "reason": "No measured Step 9 pipeline rerun with changed algorithm output was available."
+    },
+    {
+      "scenario": "baseline",
+      "metric": "detected_objects",
+      "before": 2,
+      "after": 2,
+      "change": 0.0,
+      "improved": null,
+      "reason": "No measured Step 9 pipeline rerun with changed algorithm output was available."
+    },
+    {
+      "scenario": "baseline",
+      "metric": "objects_3d",
+      "before": 2,
+      "after": 2,
+      "change": 0.0,
+      "improved": null,
+      "reason": "No measured Step 9 pipeline rerun with changed algorithm output was available."
+    },
+    {
+      "scenario": "baseline",
+      "metric": "object_3d_association_rate",
+      "before": 1.0,
+      "after": 1.0,
+      "change": 0.0,
+      "improved": null,
+      "reason": "No measured Step 9 pipeline rerun with changed algorithm output was available."
+    },
+    {
+      "scenario": "baseline",
+      "metric": "total_processing_time_seconds",
+      "before": null,
+      "after": null,
+      "change": null,
+      "improved": null,
+      "reason": "No measured Step 9 pipeline rerun with changed algorithm output was available."
+    },
+    {
+      "scenario": "baseline",
+      "metric": "processing_to_video_duration_ratio",
+      "before": null,
+      "after": null,
+      "change": null,
+      "improved": null,
+      "reason": "No measured Step 9 pipeline rerun with changed algorithm output was available."
+    },
+    {
+      "scenario": "processing_time",
+      "metric": "processing_time_observability",
+      "before": "future backend runs did not include per-stage processing_time_seconds in run_state summaries",
+      "after": "future backend runs include per-stage processing_time_seconds for Steps 1-6",
+      "change": "instrumentation added",
+      "improved": true,
+      "reason": "Step 8 could not support a real-time claim because total_processing_time_seconds was null."
+    },
+    {
+      "scenario": "metric_accuracy",
+      "metric": "measurement_reliability_status",
+      "before": "measurements used ESTIMATED or INSUFFICIENT_EVIDENCE",
+      "after": "measurements use MEASUREMENT_AVAILABLE, MEASUREMENT_AVAILABLE_WITH_WARNING, or MEASUREMENT_NOT_RELIABLE",
+      "change": "status contract strengthened",
+      "improved": true,
+      "reason": "Step 8 emphasized not returning confident measurements where evidence is weak."
+    }
+  ],
+  "step9_scorecard": [
+    {
+      "ps_challenge": "Limited viewing angles",
+      "before": "NOT_TESTED",
+      "after": "NOT_TESTED",
+      "improvement": "No measured accuracy/status improvement.",
+      "remaining_weakness": "No measured experiment results yet."
+    },
+    {
+      "ps_challenge": "Motion blur",
+      "before": "NOT_TESTED",
+      "after": "NOT_TESTED",
+      "improvement": "No measured accuracy/status improvement.",
+      "remaining_weakness": "No measured experiment results yet."
+    },
+    {
+      "ps_challenge": "Video compression",
+      "before": "NOT_TESTED",
+      "after": "NOT_TESTED",
+      "improvement": "No measured accuracy/status improvement.",
+      "remaining_weakness": "No measured experiment results yet."
+    },
+    {
+      "ps_challenge": "Variable illumination",
+      "before": "NOT_TESTED",
+      "after": "NOT_TESTED",
+      "improvement": "No measured accuracy/status improvement.",
+      "remaining_weakness": "No measured experiment results yet."
+    },
+    {
+      "ps_challenge": "Shadows",
+      "before": "NOT_TESTED",
+      "after": "NOT_TESTED",
+      "improvement": "No measured accuracy/status improvement.",
+      "remaining_weakness": "No measured experiment results yet."
+    },
+    {
+      "ps_challenge": "Dynamic objects",
+      "before": "NOT_TESTED",
+      "after": "NOT_TESTED",
+      "improvement": "No measured accuracy/status improvement.",
+      "remaining_weakness": "No measured experiment results yet."
+    },
+    {
+      "ps_challenge": "GPS inaccuracies",
+      "before": "NOT_TESTED",
+      "after": "NOT_TESTED",
+      "improvement": "No measured accuracy/status improvement.",
+      "remaining_weakness": "No measured experiment results yet."
+    },
+    {
+      "ps_challenge": "Sensor noise",
+      "before": "NOT_TESTED",
+      "after": "NOT_TESTED",
+      "improvement": "No measured accuracy/status improvement.",
+      "remaining_weakness": "No measured experiment results yet."
+    },
+    {
+      "ps_challenge": "Real-time / near-real-time processing",
+      "before": "PARTIAL",
+      "after": "PARTIAL",
+      "improvement": "Future run_state summaries now preserve per-stage processing_time_seconds.",
+      "remaining_weakness": "Existing processed-demo lacks measured timings; real-time still cannot be claimed."
+    },
+    {
+      "ps_challenge": "Occluded surfaces",
+      "before": "NOT_TESTED",
+      "after": "NOT_TESTED",
+      "improvement": "No measured accuracy/status improvement.",
+      "remaining_weakness": "No measured experiment results yet."
+    },
+    {
+      "ps_challenge": "Lack of Ground Control Points",
+      "before": "NOT_TESTED",
+      "after": "NOT_TESTED",
+      "improvement": "No measured accuracy/status improvement.",
+      "remaining_weakness": "No measured experiment results yet."
+    },
+    {
+      "ps_challenge": "Metric accuracy",
+      "before": "NOT_TESTED",
+      "after": "NOT_TESTED",
+      "improvement": "Low/insufficient evidence now produces explicit reliability statuses.",
+      "remaining_weakness": "Ground-truth measurements are still required for metric accuracy."
+    }
+  ],
+  "ablation_results": [
+    {
+      "ablation": "baseline vs timing instrumentation",
+      "status": "PARTIAL",
+      "result": "Instrumentation improves observability; no reconstruction metric is expected to change."
+    },
+    {
+      "ablation": "baseline vs measurement reliability status contract",
+      "status": "PARTIAL",
+      "result": "Reliability wording improves failure preservation; metric accuracy remains NOT_TESTED without ground truth."
+    }
+  ],
+  "regression_tests": {
+    "status": "RUN_SEPARATELY",
+    "command": "python -m pytest -q --basetemp .pytest-tmp-all"
+  }
+}

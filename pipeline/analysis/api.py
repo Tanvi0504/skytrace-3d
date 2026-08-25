@@ -70,10 +70,15 @@ def measure_scene_distance(
         warnings.append(
             "Measurement is not recommended: at least one required evidence component is insufficient."
         )
+    measurement_status = "MEASUREMENT_NOT_RELIABLE"
+    if level in {"HIGH", "MEDIUM"}:
+        measurement_status = "MEASUREMENT_AVAILABLE_WITH_WARNING" if warnings else "MEASUREMENT_AVAILABLE"
+    elif level == "LOW":
+        measurement_status = "MEASUREMENT_AVAILABLE_WITH_WARNING"
     return SceneMeasurementResult(
         measurement_id=str(measurement_id),
         measurement=distance,
-        measurement_status=("INSUFFICIENT_EVIDENCE" if level == "INSUFFICIENT" else "ESTIMATED"),
+        measurement_status=measurement_status,
         evidence_score=score,
         evidence_level=level,
         endpoint_a_evidence=endpoint_a,
@@ -150,10 +155,12 @@ def analyze_georeferenced_scene(
             quality_region_count=len(quality_grid["regions"]),
             measurement_count=len(measurement_results),
             recommended_measurement_count=sum(
-                item.measurement_status == "ESTIMATED" for item in measurement_results
+                item.measurement_status
+                in {"MEASUREMENT_AVAILABLE", "MEASUREMENT_AVAILABLE_WITH_WARNING"}
+                for item in measurement_results
             ),
             insufficient_measurement_count=sum(
-                item.measurement_status == "INSUFFICIENT_EVIDENCE"
+                item.measurement_status == "MEASUREMENT_NOT_RELIABLE"
                 for item in measurement_results
             ),
             evidence_processing_time_seconds=evidence_elapsed,

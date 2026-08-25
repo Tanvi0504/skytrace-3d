@@ -1,0 +1,86 @@
+[
+  {
+    "ps_challenge": "Limited viewing angles",
+    "before": "NOT_TESTED",
+    "after": "NOT_TESTED",
+    "improvement": "No measured accuracy/status improvement.",
+    "remaining_weakness": "No measured experiment results yet."
+  },
+  {
+    "ps_challenge": "Motion blur",
+    "before": "NOT_TESTED",
+    "after": "NOT_TESTED",
+    "improvement": "No measured accuracy/status improvement.",
+    "remaining_weakness": "No measured experiment results yet."
+  },
+  {
+    "ps_challenge": "Video compression",
+    "before": "NOT_TESTED",
+    "after": "NOT_TESTED",
+    "improvement": "No measured accuracy/status improvement.",
+    "remaining_weakness": "No measured experiment results yet."
+  },
+  {
+    "ps_challenge": "Variable illumination",
+    "before": "NOT_TESTED",
+    "after": "NOT_TESTED",
+    "improvement": "No measured accuracy/status improvement.",
+    "remaining_weakness": "No measured experiment results yet."
+  },
+  {
+    "ps_challenge": "Shadows",
+    "before": "NOT_TESTED",
+    "after": "NOT_TESTED",
+    "improvement": "No measured accuracy/status improvement.",
+    "remaining_weakness": "No measured experiment results yet."
+  },
+  {
+    "ps_challenge": "Dynamic objects",
+    "before": "NOT_TESTED",
+    "after": "NOT_TESTED",
+    "improvement": "No measured accuracy/status improvement.",
+    "remaining_weakness": "No measured experiment results yet."
+  },
+  {
+    "ps_challenge": "GPS inaccuracies",
+    "before": "NOT_TESTED",
+    "after": "NOT_TESTED",
+    "improvement": "No measured accuracy/status improvement.",
+    "remaining_weakness": "No measured experiment results yet."
+  },
+  {
+    "ps_challenge": "Sensor noise",
+    "before": "NOT_TESTED",
+    "after": "NOT_TESTED",
+    "improvement": "No measured accuracy/status improvement.",
+    "remaining_weakness": "No measured experiment results yet."
+  },
+  {
+    "ps_challenge": "Real-time / near-real-time processing",
+    "before": "PARTIAL",
+    "after": "PARTIAL",
+    "improvement": "Future run_state summaries now preserve per-stage processing_time_seconds.",
+    "remaining_weakness": "Existing processed-demo lacks measured timings; real-time still cannot be claimed."
+  },
+  {
+    "ps_challenge": "Occluded surfaces",
+    "before": "NOT_TESTED",
+    "after": "NOT_TESTED",
+    "improvement": "No measured accuracy/status improvement.",
+    "remaining_weakness": "No measured experiment results yet."
+  },
+  {
+    "ps_challenge": "Lack of Ground Control Points",
+    "before": "NOT_TESTED",
+    "after": "NOT_TESTED",
+    "improvement": "No measured accuracy/status improvement.",
+    "remaining_weakness": "No measured experiment results yet."
+  },
+  {
+    "ps_challenge": "Metric accuracy",
+    "before": "NOT_TESTED",
+    "after": "NOT_TESTED",
+    "improvement": "Low/insufficient evidence now produces explicit reliability statuses.",
+    "remaining_weakness": "Ground-truth measurements are still required for metric accuracy."
+  }
+]

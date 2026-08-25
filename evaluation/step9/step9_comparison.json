@@ -1,0 +1,92 @@
+[
+  {
+    "scenario": "baseline",
+    "metric": "registered_frames",
+    "before": 10,
+    "after": 10,
+    "change": 0.0,
+    "improved": null,
+    "reason": "No measured Step 9 pipeline rerun with changed algorithm output was available."
+  },
+  {
+    "scenario": "baseline",
+    "metric": "registration_rate",
+    "before": 0.8333333333333334,
+    "after": 0.8333333333333334,
+    "change": 0.0,
+    "improved": null,
+    "reason": "No measured Step 9 pipeline rerun with changed algorithm output was available."
+  },
+  {
+    "scenario": "baseline",
+    "metric": "point_count",
+    "before": 9,
+    "after": 9,
+    "change": 0.0,
+    "improved": null,
+    "reason": "No measured Step 9 pipeline rerun with changed algorithm output was available."
+  },
+  {
+    "scenario": "baseline",
+    "metric": "detected_objects",
+    "before": 2,
+    "after": 2,
+    "change": 0.0,
+    "improved": null,
+    "reason": "No measured Step 9 pipeline rerun with changed algorithm output was available."
+  },
+  {
+    "scenario": "baseline",
+    "metric": "objects_3d",
+    "before": 2,
+    "after": 2,
+    "change": 0.0,
+    "improved": null,
+    "reason": "No measured Step 9 pipeline rerun with changed algorithm output was available."
+  },
+  {
+    "scenario": "baseline",
+    "metric": "object_3d_association_rate",
+    "before": 1.0,
+    "after": 1.0,
+    "change": 0.0,
+    "improved": null,
+    "reason": "No measured Step 9 pipeline rerun with changed algorithm output was available."
+  },
+  {
+    "scenario": "baseline",
+    "metric": "total_processing_time_seconds",
+    "before": null,
+    "after": null,
+    "change": null,
+    "improved": null,
+    "reason": "No measured Step 9 pipeline rerun with changed algorithm output was available."
+  },
+  {
+    "scenario": "baseline",
+    "metric": "processing_to_video_duration_ratio",
+    "before": null,
+    "after": null,
+    "change": null,
+    "improved": null,
+    "reason": "No measured Step 9 pipeline rerun with changed algorithm output was available."
+  },
+  {
+    "scenario": "processing_time",
+    "metric": "processing_time_observability",
+    "before": "future backend runs did not include per-stage processing_time_seconds in run_state summaries",
+    "after": "future backend runs include per-stage processing_time_seconds for Steps 1-6",
+    "change": "instrumentation added",
+    "improved": true,
+    "reason": "Step 8 could not support a real-time claim because total_processing_time_seconds was null."
+  },
+  {
+    "scenario": "metric_accuracy",
+    "metric": "measurement_reliability_status",
+    "before": "measurements used ESTIMATED or INSUFFICIENT_EVIDENCE",
+    "after": "measurements use MEASUREMENT_AVAILABLE, MEASUREMENT_AVAILABLE_WITH_WARNING, or MEASUREMENT_NOT_RELIABLE",
+    "change": "status contract strengthened",
+    "improved": true,
+    "reason": "Step 8 emphasized not returning confident measurements where evidence is weak."
+  }
+]

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import time
 from pathlib import Path
 from threading import Thread
 
@@ -29,6 +30,7 @@ def _run_pipeline(run_id: str, request: ProcessRequest) -> None:
     video_path = directory / "uploads" / status.video_filename
     try:
         mark_step(run_id, 1, StepStatus.RUNNING)
+        step_started = time.monotonic()
         video = process_video(
             VideoProcessingConfig(
                 video_path=video_path,
@@ -46,10 +48,12 @@ def _run_pipeline(run_id: str, request: ProcessRequest) -> None:
                 "sampled_frames": video.sampled_count,
                 "selected_frames": video.selected_count,
                 "rejected_frames": video.rejected_count,
+                "processing_time_seconds": video.processing_time_seconds,
             },
         )
 
         mark_step(run_id, 2, StepStatus.RUNNING)
+        step_started = time.monotonic()
         reconstruction = run_reconstruction(
             directory / "frames",
             directory / "reconstruction",
@@ -68,12 +72,15 @@ def _run_pipeline(run_id: str, request: ProcessRequest) -> None:
                 "registered_images": reconstruction.registered_image_count,
                 "sparse_points": reconstruction.sparse_point_count,
                 "dense_status": reconstruction.dense_status,
+                "processing_time_seconds": reconstruction.processing_time_seconds
+                or round(time.monotonic() - step_started, 4),
             },
             warnings=reconstruction.warnings,
         )
 
         gps_path = directory / (request.gps_metadata_filename or "gps_metadata.json")
         mark_step(run_id, 3, StepStatus.RUNNING)
+        step_started = time.monotonic()
         georef = georeference_reconstruction(
             directory / "reconstruction",
             gps_path,
@@ -92,11 +99,14 @@ def _run_pipeline(run_id: str, request: ProcessRequest) -> None:
                 "matched_poses": georef.matched_pose_count,
                 "inliers": georef.inlier_count,
                 "estimated_scale": georef.estimated_scale,
+                "processing_time_seconds": georef.processing_time_seconds
+                or round(time.monotonic() - step_started, 4),
             },
             warnings=georef.warnings,
         )
 
         mark_step(run_id, 4, StepStatus.RUNNING)
+        step_started = time.monotonic()
         objects = detect_and_track_objects(
             directory / "frames",
             directory / "objects",
@@ -113,11 +123,14 @@ def _run_pipeline(run_id: str, request: ProcessRequest) -> None:
                 "frames_processed": objects.frames_processed,
                 "detected_objects": objects.detection_count,
                 "tracks": objects.track_count,
+                "processing_time_seconds": objects.processing_time_seconds
+                or round(time.monotonic() - step_started, 4),
             },
             warnings=objects.warnings,
         )
 
         mark_step(run_id, 5, StepStatus.RUNNING)
+        step_started = time.monotonic()
         associations = associate_objects_with_3d_scene(
             directory / "objects",
             directory / "reconstruction",
@@ -137,11 +150,14 @@ def _run_pipeline(run_id: str, request: ProcessRequest) -> None:
                 "estimated": associations.estimated_count,
                 "low_confidence": associations.low_confidence_count,
                 "unavailable": associations.unavailable_count,
+                "processing_time_seconds": associations.processing_time_seconds
+                or round(time.monotonic() - step_started, 4),
             },
             warnings=associations.warnings,
         )
 
         mark_step(run_id, 6, StepStatus.RUNNING)
+        step_started = time.monotonic()
         analysis = analyze_georeferenced_scene(
             directory / "georeferenced",
             directory / "analysis",
@@ -160,6 +176,8 @@ def _run_pipeline(run_id: str, request: ProcessRequest) -> None:
                 "cameras": analysis.camera_count,
                 "quality_regions": analysis.quality_region_count,
                 "dynamic_markers": analysis.dynamic_marker_count,
+                "processing_time_seconds": analysis.processing_time_seconds
+                or round(time.monotonic() - step_started, 4),
             },
             warnings=analysis.warnings,
         )
@@ -174,4 +192,3 @@ def _run_pipeline(run_id: str, request: ProcessRequest) -> None:
 def start_background_run(run_id: str, request: ProcessRequest) -> None:
     worker = Thread(target=_run_pipeline, args=(run_id, request), daemon=True)
     worker.start()
-

@@ -1,0 +1,52 @@
+schema_version: 1
+profile: robust_step9
+description: Step 9 robustness policy. Accuracy tuning remains disabled until scenario ground truth exists.
+
+scientific_constraints:
+  require_measured_step8_evidence: true
+  preserve_failures: true
+  do_not_claim_real_time_without_timing: true
+  do_not_claim_metric_accuracy_without_ground_truth: true
+  keep_synthetic_data_labelled: true
+
+video:
+  target_fps: 5.0
+  blur_threshold: 100.0
+  jpeg_quality: 95
+  preprocessing:
+    apply_globally: false
+    enabled_methods: []
+    reason: Step 8 generated stress videos but did not measure full-pipeline degradation, so image preprocessing is not tuned yet.
+
+analysis_evidence:
+  density_radius_metres: 3.0
+  density_target_points: 20
+  camera_support_radius_metres: 80.0
+  camera_target_count: 4
+  view_diversity_target_degrees: 30.0
+  density_weight: 0.50
+  nearby_camera_weight: 0.25
+  view_diversity_weight: 0.25
+  dynamic_contamination_radius_metres: 3.0
+  dynamic_contamination_target_count: 1
+  dynamic_contamination_penalty: 0.25
+  high_threshold: 0.75
+  medium_threshold: 0.50
+  low_threshold: 0.25
+  quality_grid_cell_size_metres: 5.0
+  max_quality_regions: 10000
+  segment_samples: 5
+  minimum_segment_supported_fraction: 0.50
+
+measurement_reliability:
+  high_or_medium_without_warnings: MEASUREMENT_AVAILABLE
+  high_or_medium_with_warnings: MEASUREMENT_AVAILABLE_WITH_WARNING
+  low: MEASUREMENT_AVAILABLE_WITH_WARNING
+  insufficient: MEASUREMENT_NOT_RELIABLE
+
+reporting:
+  failure_priorities: evaluation/step9/failure_priorities.json
+  comparison: evaluation/step9/step9_comparison.json
+  scorecard_json: evaluation/step9/step9_scorecard.json
+  scorecard_markdown: evaluation/step9/step9_scorecard.md
+

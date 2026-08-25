@@ -159,7 +159,7 @@ def test_sparse_region_is_insufficient_and_measurement_is_not_recommended(tmp_pa
     result = measure_scene_distance(scene, [0, 0, 0], [200, 0, 0])
 
     assert result.measurement.distance_3d_metres == pytest.approx(200.0)
-    assert result.measurement_status == "INSUFFICIENT_EVIDENCE"
+    assert result.measurement_status == "MEASUREMENT_NOT_RELIABLE"
     assert result.evidence_level == "INSUFFICIENT"
     assert any("Point B lies" in warning for warning in result.warnings)
 
@@ -205,6 +205,7 @@ def test_analysis_writes_measurements_and_compact_quality_grid(tmp_path: Path) -
     assert result.measurement_count == 1
     assert result.recommended_measurement_count == 1
     measurements = json.loads((output / "measurements.json").read_text())["measurements"]
+    assert measurements[0]["measurement_status"] == "MEASUREMENT_AVAILABLE"
     assert measurements[0]["distance_3d"] == pytest.approx(5.0)
     assert measurements[0]["horizontal_distance"] == pytest.approx(5.0)
     assert measurements[0]["vertical_difference"] == pytest.approx(0.0)
