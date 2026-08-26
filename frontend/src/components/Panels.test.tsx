@@ -62,20 +62,57 @@ test("renders processing state", () => {
 });
 
 test("renders object metadata, evidence legend, and warnings", () => {
-  render(
+  const { rerender } = render(
     <DetailsPanel
       scene={scene}
       objects={[object]}
       selected={object}
       evidence={evidence}
       measurement={{ measurement_id: "m1", distance_3d: 2, horizontal_distance: 1, vertical_difference: 1, unit: "m", measurement_status: "ESTIMATED", evidence_score: 0.2, evidence_level: "LOW", warnings: ["Measurement has low evidence support."] }}
+      activeTab="detections"
       onSelect={() => undefined}
       onDownload={() => undefined}
     />
   );
   expect(screen.getAllByText(/car #7/i).length).toBeGreaterThan(0);
   expect(screen.getByText("Motion status unknown")).toBeInTheDocument();
+  rerender(
+    <DetailsPanel
+      scene={scene}
+      objects={[object]}
+      selected={object}
+      evidence={evidence}
+      measurement={{ measurement_id: "m1", distance_3d: 2, horizontal_distance: 1, vertical_difference: 1, unit: "m", measurement_status: "ESTIMATED", evidence_score: 0.2, evidence_level: "LOW", warnings: ["Measurement has low evidence support."] }}
+      activeTab="evidence"
+      onSelect={() => undefined}
+      onDownload={() => undefined}
+    />
+  );
   expect(screen.getByText(/strong supporting evidence/)).toBeInTheDocument();
+  rerender(
+    <DetailsPanel
+      scene={scene}
+      objects={[object]}
+      selected={object}
+      evidence={evidence}
+      measurement={{ measurement_id: "m1", distance_3d: 2, horizontal_distance: 1, vertical_difference: 1, unit: "m", measurement_status: "ESTIMATED", evidence_score: 0.2, evidence_level: "LOW", warnings: ["Measurement has low evidence support."] }}
+      activeTab="scene"
+      onSelect={() => undefined}
+      onDownload={() => undefined}
+    />
+  );
   expect(screen.getByText(/Low GPS support/)).toBeInTheDocument();
+  rerender(
+    <DetailsPanel
+      scene={scene}
+      objects={[object]}
+      selected={object}
+      evidence={evidence}
+      measurement={{ measurement_id: "m1", distance_3d: 2, horizontal_distance: 1, vertical_difference: 1, unit: "m", measurement_status: "ESTIMATED", evidence_score: 0.2, evidence_level: "LOW", warnings: ["Measurement has low evidence support."] }}
+      activeTab="measurements"
+      onSelect={() => undefined}
+      onDownload={() => undefined}
+    />
+  );
   expect(screen.getByText(/Measurement has low evidence support/)).toBeInTheDocument();
 });

@@ -1,0 +1,6 @@
+{
+  "source_artifacts": [
+    "objects/detections.json",
+    "objects/tracks.json"
+  ]
+}

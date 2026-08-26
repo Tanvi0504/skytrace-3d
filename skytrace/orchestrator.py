@@ -153,11 +153,20 @@ class PipelineOrchestrator:
         self.warnings.append(f"Step {stage} resumed from a validated checkpoint.")
         return True
 
-    def _complete_stage(self, stage: int, started: float, summary: dict[str, Any], warnings: list[str], artifacts: list[Path]) -> None:
+    def _complete_stage(
+        self,
+        stage: int,
+        started: float,
+        summary: dict[str, Any],
+        warnings: list[str],
+        artifacts: list[Path],
+        *,
+        callback_status: str = "COMPLETED",
+    ) -> None:
         status = "WARNING" if warnings else "OK"
         self.observer.finish(stage, started, status=status, summary=summary, warnings=warnings)
         self.observer.checkpoint(stage, artifacts)
-        self._notify(stage, "COMPLETED", summary, warnings)
+        self._notify(stage, callback_status, summary, warnings)
         self.warnings.extend(warnings)
 
     def _fail_stage(self, stage: int, started: float, error: str, warnings: list[str] | None = None) -> None:
@@ -168,7 +177,7 @@ class PipelineOrchestrator:
     def _skip_stage(self, stage: int, reason: str) -> None:
         started = self.observer.start(stage)
         self.observer.finish(stage, started, status="SKIPPED", warnings=[reason])
-        self._notify(stage, "COMPLETED", {"skipped": True}, [reason])
+        self._notify(stage, "PARTIAL", {"unavailable": True}, [reason])
         self.warnings.append(f"Step {stage}: {reason}")
 
     def run(self) -> PipelineOutcome:
@@ -176,17 +185,36 @@ class PipelineOrchestrator:
         try:
             if not self._resumable(1):
                 self._run_stage_1()
-            if self.first_failed_stage is None and not self._resumable(2):
+            if self.first_failed_stage is not None:
+                return self._package()
+            if not self._resumable(2):
                 self._run_stage_2()
-            geo_available = (self.directory / "georeferenced" / "transform.json").is_file()
-            if self.first_failed_stage is None and not self._resumable(3):
-                geo_available = self._run_stage_3()
-            if self.first_failed_stage is None and not self._resumable(4):
+            reconstruction_available = validate_stage_output(self.directory, 2)[0]
+            geo_available = False
+            if reconstruction_available:
+                geo_available = (self.directory / "georeferenced" / "transform.json").is_file()
+                if not self._resumable(3):
+                    geo_available = self._run_stage_3()
+            else:
+                self._skip_stage(3, "Georeferencing requires a valid Step 2 reconstruction; no coordinate alignment is fabricated.")
+            if not self._resumable(4):
                 self._run_stage_4()
-            if self.first_failed_stage is None and not self._resumable(5):
-                self._run_stage_5(geo_available)
-            if self.first_failed_stage is None and not self._resumable(6):
-                self._run_stage_6(geo_available)
+            objects_available = validate_stage_output(self.directory, 4)[0]
+            if reconstruction_available and objects_available:
+                if not self._resumable(5):
+                    self._run_stage_5(geo_available)
+            else:
+                missing = []
+                if not reconstruction_available:
+                    missing.append("valid reconstruction")
+                if not objects_available:
+                    missing.append("object detections/tracks")
+                self._skip_stage(5, f"3D object association requires {', '.join(missing)}; object positions are not invented.")
+            if geo_available and validate_stage_output(self.directory, 5)[0]:
+                if not self._resumable(6):
+                    self._run_stage_6(geo_available)
+            else:
+                self._skip_stage(6, "Skipped because a valid georeferenced metre-valued scene and associated objects are unavailable; no metric measurements or evidence map are fabricated.")
         except Exception as exc:  # A final guard makes every unexpected failure observable.
             stage = self.first_failed_stage or self._active_stage()
             if self.first_failed_stage is None:
@@ -285,6 +313,7 @@ class PipelineOrchestrator:
             },
             warnings,
             [self.directory / "reconstruction" / "reconstruction_metadata.json", self.directory / "reconstruction" / "camera_poses.json"],
+            callback_status="PARTIAL" if result.dense_status == "failed" else "COMPLETED",
         )
 
     def _run_stage_3(self) -> bool:
@@ -437,6 +466,7 @@ class PipelineOrchestrator:
 
     def _package(self) -> PipelineOutcome:
         started = self.observer.start(7)
+        self._notify(7, "RUNNING")
         limitations = [
             "Georeferencing residuals and evidence scores are not survey-accuracy claims.",
             "Unobserved or occluded surfaces are not reconstructed as confirmed geometry.",
@@ -467,6 +497,7 @@ class PipelineOrchestrator:
             available = [item for item in items if (self.directory / item).is_file()]
             write_json(self.directory / name / "index.json", {"source_artifacts": available})
         self.observer.finish(7, started, status="OK", summary={"package_directory": str(self.directory)})
+        self._notify(7, "COMPLETED", {"package_directory": str(self.directory)}, [])
         health["stages"] = list(self.observer.stages.values())
         write_json(self.directory / "pipeline_health.json", health)
         base_manifest = {

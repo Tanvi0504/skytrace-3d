@@ -1,0 +1,7 @@
+{
+  "source_artifacts": [
+    "input_report.json",
+    "pipeline_health.json",
+    "logs/metrics.json"
+  ]
+}

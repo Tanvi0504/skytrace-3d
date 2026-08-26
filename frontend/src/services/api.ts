@@ -30,6 +30,11 @@ export const api = {
     body.append("file", file);
     return request<{ filename: string; size_bytes: number }>(`/runs/${runId}/upload`, { method: "POST", body });
   },
+  uploadGpsMetadata: (runId: string, file: File) => {
+    const body = new FormData();
+    body.append("file", file);
+    return request<{ filename: string; size_bytes: number }>(`/runs/${runId}/gps-metadata`, { method: "POST", body });
+  },
   startProcessing: (runId: string) =>
     request<RunStatus>(`/runs/${runId}/process`, {
       method: "POST",

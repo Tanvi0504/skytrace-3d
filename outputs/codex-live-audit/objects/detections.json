@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "description": "2D detections in source-image pixel coordinates. Their frame identity can later join Step 2 camera poses and Step 3 ENU cameras; they are not 3D object locations.",
+  "detector": {
+    "backend": "ultralytics-yolo",
+    "model_name": "models\\yolo11n.pt",
+    "device": "cpu"
+  },
+  "detections": []
+}

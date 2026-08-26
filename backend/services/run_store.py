@@ -19,6 +19,7 @@ STEP_NAMES = {
     4: "Object detection",
     5: "3D object association",
     6: "Measurement / reliability analysis",
+    7: "Interactive viewer packaging",
 }
 
 _LOCK = Lock()
@@ -131,4 +132,3 @@ def mark_completed(run_id: str) -> RunStatus:
     status.state = RunState.COMPLETED
     save_status(status)
     return status
-

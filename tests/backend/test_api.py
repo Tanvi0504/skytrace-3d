@@ -21,7 +21,7 @@ def test_create_run_and_status():
     assert status.status_code == 200
     body = status.json()
     assert body["state"] == "QUEUED"
-    assert [step["step"] for step in body["steps"]] == [1, 2, 3, 4, 5, 6]
+    assert [step["step"] for step in body["steps"]] == [1, 2, 3, 4, 5, 6, 7]
 
 
 def test_upload_rejects_non_mp4():
@@ -32,6 +32,28 @@ def test_upload_rejects_non_mp4():
     )
     assert response.status_code == 400
     assert "MP4" in response.json()["detail"]
+
+
+def test_upload_accepts_valid_gps_metadata():
+    run_id = client.post("/runs").json()["run_id"]
+    response = client.post(
+        f"/runs/{run_id}/gps-metadata",
+        files={"file": ("flight.json", b'{"gps": []}', "application/json")},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["filename"] == "gps_metadata.json"
+
+
+def test_upload_rejects_invalid_gps_metadata():
+    run_id = client.post("/runs").json()["run_id"]
+    response = client.post(
+        f"/runs/{run_id}/gps-metadata",
+        files={"file": ("flight.json", b"not json", "application/json")},
+    )
+
+    assert response.status_code == 400
+    assert "valid UTF-8 JSON" in response.json()["detail"]
 
 
 def test_scene_metadata_for_step_one_example_is_honest():

@@ -1,4 +1,4 @@
-export type StepStatus = "WAITING" | "RUNNING" | "COMPLETED" | "FAILED";
+export type StepStatus = "WAITING" | "RUNNING" | "PARTIAL" | "COMPLETED" | "FAILED";
 export type RunState =
   | "QUEUED"
   | "RUNNING_STEP_1"
@@ -7,6 +7,7 @@ export type RunState =
   | "RUNNING_STEP_4"
   | "RUNNING_STEP_5"
   | "RUNNING_STEP_6"
+  | "RUNNING_STEP_7"
   | "COMPLETED"
   | "FAILED";
 
@@ -85,4 +86,3 @@ export type MeasurementResult = {
   warnings: string[];
   api_response_time_seconds?: number;
 };
-

@@ -14,7 +14,7 @@ The processing modules are deliberately conservative. GPS alignment residuals an
 ## Requirements
 
 - Python 3.10–3.12 (3.11 is the tested Docker base)
-- Node 20–22 for the frontend
+- Node 20–24 for the frontend
 - FFmpeg and COLMAP on `PATH` for live reconstruction
 - 10 GB free storage minimum; more is needed for real dense reconstructions
 - CPU-only operation is supported by default. NVIDIA CUDA is optional and is not required for the shipped configuration.

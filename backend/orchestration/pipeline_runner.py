@@ -45,6 +45,8 @@ def _run_pipeline(run_id: str, request: ProcessRequest) -> None:
                 mark_step(run_id, stage, StepStatus.RUNNING)
             elif state == "FAILED":
                 mark_step(run_id, stage, StepStatus.FAILED, summary=summary, warnings=warnings, error=error)
+            elif state == "PARTIAL":
+                mark_step(run_id, stage, StepStatus.PARTIAL, summary=summary, warnings=warnings, error=error)
             else:
                 mark_step(run_id, stage, StepStatus.COMPLETED, summary=summary, warnings=warnings, error=None)
 

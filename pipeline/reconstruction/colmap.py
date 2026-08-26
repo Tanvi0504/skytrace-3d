@@ -22,6 +22,13 @@ from pipeline.reconstruction.errors import (
 from pipeline.reconstruction.models import ReconstructionConfig, ReconstructionResult
 
 
+LOCAL_COLMAP_CANDIDATES = (
+    Path("tools") / "colmap" / "COLMAP.bat",
+    Path("tools") / "colmap" / "colmap.exe",
+    Path("tools") / "colmap" / "bin" / "colmap.exe",
+)
+
+
 @dataclass
 class SparseModelStats:
     """Counts and pose records parsed from COLMAP's text model export."""
@@ -131,6 +138,13 @@ def write_camera_poses(path: Path, poses: list[dict]) -> None:
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
 
+def _local_colmap_candidate() -> str | None:
+    for candidate in LOCAL_COLMAP_CANDIDATES:
+        if candidate.is_file():
+            return str(candidate.resolve())
+    return None
+
+
 class COLMAPBackend(ReconstructionBackend):
     """Run a conventional COLMAP SfM pipeline and optional dense MVS pass."""
 
@@ -149,10 +163,13 @@ class COLMAPBackend(ReconstructionBackend):
             return
 
         resolved = shutil.which(executable)
+        if resolved is None and executable.lower() == "colmap":
+            resolved = _local_colmap_candidate()
         if resolved is None:
             raise ColmapUnavailableError(
                 "COLMAP was not found on PATH. Install COLMAP and ensure the "
-                "'colmap' executable is accessible, or pass --colmap-executable."
+                "'colmap' executable is accessible, place the portable Windows "
+                "release at tools/colmap/COLMAP.bat, or pass --colmap-executable."
             )
         config.colmap_executable = resolved
 

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import time
+import json
 from pathlib import Path
 
 from fastapi import BackgroundTasks, FastAPI, File, HTTPException, UploadFile
@@ -119,6 +120,29 @@ async def upload_video(run_id: str, file: UploadFile = File(...)) -> UploadRespo
             target.write(chunk)
     attach_video(run_id, filename, size)
     return UploadResponse(run_id=run_id, filename=filename, size_bytes=size, content_type=file.content_type)
+
+
+@app.post("/runs/{run_id}/gps-metadata", response_model=UploadResponse)
+async def upload_gps_metadata(run_id: str, file: UploadFile = File(...)) -> UploadResponse:
+    _load_run_or_error(run_id)
+    _ensure_run_is_writable(run_id)
+    filename = sanitize_filename(file.filename or "")
+    if Path(filename).suffix.lower() != ".json":
+        raise HTTPException(status_code=400, detail="GPS/flight metadata must be uploaded as JSON for this MVP.")
+    destination = run_dir(run_id) / "gps_metadata.json"
+    size = 0
+    data = bytearray()
+    while chunk := await file.read(1024 * 1024):
+        size += len(chunk)
+        if size > 25 * 1024 * 1024:
+            raise HTTPException(status_code=413, detail="GPS metadata exceeds the 25 MB local MVP limit.")
+        data.extend(chunk)
+    try:
+        json.loads(data.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise HTTPException(status_code=400, detail="GPS metadata is not valid UTF-8 JSON.") from exc
+    destination.write_bytes(bytes(data))
+    return UploadResponse(run_id=run_id, filename="gps_metadata.json", size_bytes=size, content_type=file.content_type)
 
 
 @app.post("/runs/{run_id}/process", response_model=RunStatus)

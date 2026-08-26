@@ -25,9 +25,31 @@ REQUIRED_PACKAGES = {
     "Pydantic": "pydantic",
     "PyYAML": "yaml",
     "Ultralytics": "ultralytics",
+    "LAP tracker dependency": "lap",
     "PyTorch": "torch",
     "Multipart upload support": "multipart",
     "Uvicorn": "uvicorn",
+}
+
+WINDOWS_WINGET_COMMAND_PATTERNS = {
+    "ffmpeg": [
+        "Microsoft/WinGet/Packages/Gyan.FFmpeg_*/ffmpeg-*/bin/ffmpeg.exe",
+    ],
+    "colmap": [
+        "Microsoft/WinGet/Packages/COLMAP.COLMAP_*/COLMAP-*/bin/colmap.exe",
+        "Microsoft/WinGet/Packages/COLMAP.COLMAP_*/colmap.exe",
+    ],
+}
+
+LOCAL_COMMAND_CANDIDATES = {
+    "ffmpeg": [
+        ROOT_DIR / "tools" / "ffmpeg" / "ffmpeg.exe",
+    ],
+    "colmap": [
+        ROOT_DIR / "tools" / "colmap" / "COLMAP.bat",
+        ROOT_DIR / "tools" / "colmap" / "colmap.exe",
+        ROOT_DIR / "tools" / "colmap" / "bin" / "colmap.exe",
+    ],
 }
 
 
@@ -38,14 +60,31 @@ def _memory_bytes() -> int | None:
         return None
 
 
+def _resolve_command(executable: str) -> str | None:
+    resolved = shutil.which(executable)
+    if resolved:
+        return resolved
+    for candidate in LOCAL_COMMAND_CANDIDATES.get(executable.lower(), []):
+        if candidate.is_file():
+            return str(candidate)
+    if os.name == "nt":
+        base = Path(os.environ.get("LOCALAPPDATA", ""))
+        for pattern in WINDOWS_WINGET_COMMAND_PATTERNS.get(executable.lower(), []):
+            matches = sorted(base.glob(pattern))
+            if matches:
+                return str(matches[-1])
+    return None
+
+
 def _command_version(command: list[str]) -> tuple[bool, str | None]:
-    if shutil.which(command[0]) is None:
+    resolved = _resolve_command(command[0])
+    if resolved is None:
         return False, None
     try:
-        completed = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, timeout=8, check=False)
+        completed = subprocess.run([resolved, *command[1:]], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, timeout=8, check=False)
     except (OSError, subprocess.TimeoutExpired):
         return True, None
-    return True, completed.stdout.strip().splitlines()[0] if completed.stdout.strip() else None
+    return True, completed.stdout.strip().splitlines()[0] if completed.stdout.strip() else f"available at {resolved}"
 
 
 def _status(name: str, status: str, detail: str, required: bool) -> dict[str, Any]:
@@ -56,7 +95,7 @@ def _node_version_is_supported(value: str | None) -> bool:
     if not value:
         return False
     match = re.search(r"v?(\d+)", value)
-    return bool(match and 20 <= int(match.group(1)) <= 22)
+    return bool(match and 20 <= int(match.group(1)) <= 24)
 
 
 def _storage_check() -> tuple[bool, str]:
@@ -95,7 +134,7 @@ def collect_checks(config_path: str | Path | None = None, *, include_frontend: b
             _status(
                 "Node",
                 "FOUND" if node_ok else "MISSING",
-                node_version if node_ok else "Install Node.js 20-22; it is required to build and run the frontend.",
+                node_version if node_ok else "Install Node.js 20-24; it is required to build and run the frontend.",
                 True,
             )
         )

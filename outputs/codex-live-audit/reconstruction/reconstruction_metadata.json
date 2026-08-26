@@ -1,0 +1,23 @@
+{
+  "success": false,
+  "backend": "colmap",
+  "input_image_count": 15,
+  "registered_image_count": null,
+  "sparse_point_count": null,
+  "dense_status": "not_requested",
+  "processing_time_seconds": 4.594,
+  "output_locations": {
+    "output_dir": "outputs\\codex-live-audit\\reconstruction",
+    "database": null,
+    "sparse_model": null,
+    "sparse_text": null,
+    "sparse_point_cloud": null,
+    "camera_poses": null,
+    "dense_dir": null,
+    "dense_point_cloud": null,
+    "logs": null
+  },
+  "error": "COLMAP feature_extractor failed with exit code 3236495362. See log: outputs\\codex-live-audit\\reconstruction\\logs\\feature_extractor.log",
+  "dense_error": null,
+  "warnings": []
+}

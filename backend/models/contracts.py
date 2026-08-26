@@ -16,6 +16,7 @@ class RunState(str, Enum):
     RUNNING_STEP_4 = "RUNNING_STEP_4"
     RUNNING_STEP_5 = "RUNNING_STEP_5"
     RUNNING_STEP_6 = "RUNNING_STEP_6"
+    RUNNING_STEP_7 = "RUNNING_STEP_7"
     COMPLETED = "COMPLETED"
     FAILED = "FAILED"
 
@@ -23,6 +24,7 @@ class RunState(str, Enum):
 class StepStatus(str, Enum):
     WAITING = "WAITING"
     RUNNING = "RUNNING"
+    PARTIAL = "PARTIAL"
     COMPLETED = "COMPLETED"
     FAILED = "FAILED"
 
